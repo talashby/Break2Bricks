@@ -11,7 +11,7 @@
  */
 
 class CACMachine;
-typedef FString(CACMachine::*fnACStateHandler)(int);
+typedef FName(CACMachine::*fnACStateHandler)(int);
 
 class CACMachine
 {
@@ -43,22 +43,22 @@ protected:
 
     virtual void Tick() {}
     virtual void TickHierarchical() {}
-    virtual FString TickStateStart(int iTickType) = 0;
-    virtual FString TickStateError(int iTickType) { return ""; }
+    virtual FName TickStateStart(int iTickType) = 0;
+    virtual FName TickStateError(int iTickType) { return ""; }
     virtual void BeforeTickStateStarted() {} // used to clear state variables e.g. m_eStateExternalSignal
     virtual void BeforeTickStateStartedHierarchical(); // used to clear state variables e.g. m_eStateExternalSignal
 
     void Restart();
     void OperateStates(); // (not virtual, do not overload this function) it calls from TickPublic.
 
-    bool IsCurrentState(const FString &sStateName) const;
-    bool IsLastState(const FString &sStateName) const;
-    bool IsNextState(const FString &sStateName) const;
-    bool RegisterState(const FString& sStateName, fnACStateHandler pStateHandler);
-    bool UnregisterState(const FString& sStateName);
+    bool IsCurrentState(const FName &sStateName) const;
+    bool IsLastState(const FName &sStateName) const;
+    bool IsNextState(const FName &sStateName) const;
+    bool RegisterState(const FName& sStateName, fnACStateHandler pStateHandler);
+    bool UnregisterState(const FName& sStateName);
     //bool IsStateRegistered(const hashstring& sStateName);
-    FString GetStateStartName() const;
-    FString ErrorState(const FString& sMessage = ""); // write log message and returns error state
+    FName GetStateStartName() const;
+    FName ErrorState(const FString& sMessage = ""); // write log message and returns error state
     FString GetErrorMessage() const { return m_sErrorMessage; }
 
     void SetName(const FString &sName);
@@ -70,19 +70,19 @@ protected:
     void WriteLogMessage(int iLevel, const char *sFormat, ...) const;
 
 private:
-    bool SetNextState(const FString& sStateTo);
+    bool SetNextState(const FName& sStateTo);
     void SetNextErrorState(const FString& sMessage = "");
-    FString TickStateNone(int iTickType);
+    FName TickStateNone(int iTickType);
     //bool ExecuteState(int iTickType);
 
-    typedef std::map<FString, fnACStateHandler> tStateMap;
+    typedef std::map<FName, fnACStateHandler> tStateMap;
     tStateMap m_aStateMap;
 
-    std::list<FString> m_aStatesArchive;
+    std::list<FName> m_aStatesArchive;
 
-    FString m_sState;
-    FString m_sNextState;
-    FString m_sLastState;
+    FName m_sState;
+    FName m_sNextState;
+    FName m_sLastState;
 
     fnACStateHandler m_fnCurrentState;
     fnACStateHandler m_fnNextState;

@@ -6,5 +6,11 @@
 
 #include "EngineMinimal.h"
 
+//General Log
+DECLARE_LOG_CATEGORY_EXTERN(LogGeneral, Log, All);
+namespace LogHelper
+{
+    bool CheckLogLevel(int iLogSeverityLevel);
+}
 
 #endif

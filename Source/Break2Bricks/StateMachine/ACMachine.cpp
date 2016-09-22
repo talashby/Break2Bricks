@@ -3,9 +3,9 @@
 #include "Break2Bricks.h"
 #include "ACMachine.h"
 
-static const FString g_ssStateNone("None");
-static const FString g_ssStateStart("Start");
-static const FString g_ssStateError("Error");
+static const FName g_ssStateNone("None");
+static const FName g_ssStateStart("Start");
+static const FName g_ssStateError("Error");
 
 CACMachine::CACMachine(const FString &sName)
 {
@@ -45,7 +45,7 @@ bool CACMachine::IsInErrorState() const
 
 void CACMachine::OperateStates()
 {
-    FString sNextState;
+    FName sNextState;
     if (m_bRestart)
     {
         sNextState = g_ssStateStart;
@@ -59,57 +59,60 @@ void CACMachine::OperateStates()
     while (bStateChanged)
     {
         (this->*(m_fnCurrentState))(TICK_StateFinished);
-        FString str = "Finished state: '" + m_sState + "'. Start state: '" + m_sNextState + "'";
         m_aStatesArchive.push_back(m_sNextState);
         if (m_aStatesArchive.size() > 20)
         {
             m_aStatesArchive.pop_front();
         }
-        WriteLogMessage(m_iLogSeverityLevel, TCHAR_TO_ANSI(*str));
+        if (LogHelper::CheckLogLevel(m_iLogSeverityLevel))
+        {
+            FString str = "Finished state: '" + m_sState.ToString() + "'. Start state: '" + m_sNextState.ToString() + "'";
+            WriteLogMessage(m_iLogSeverityLevel, TCHAR_TO_ANSI(*str));
+        }
         m_sLastState = m_sState;
         m_sState = m_sNextState;
         m_fnCurrentState = m_fnNextState;
         BeforeTickStateStartedHierarchical();
         BeforeTickStateStarted();
-        FString sNextState2 = (this->*(m_fnCurrentState))(TICK_StateStarted);
+        FName sNextState2 = (this->*(m_fnCurrentState))(TICK_StateStarted);
         bStateChanged = SetNextState(sNextState2);
     }
 }
 
-bool CACMachine::IsCurrentState(const FString &sStateName) const
+bool CACMachine::IsCurrentState(const FName &sStateName) const
 {
     return m_sState == sStateName;
 }
 
-bool CACMachine::IsLastState(const FString &sStateName) const
+bool CACMachine::IsLastState(const FName &sStateName) const
 {
     return m_sLastState == sStateName;
 }
 
-bool CACMachine::IsNextState(const FString &sStateName) const
+bool CACMachine::IsNextState(const FName &sStateName) const
 {
     return m_sNextState == sStateName;
 }
 
 void CACMachine::SetNextErrorState(const FString& sMessage/* = ""*/)
 {
-    WriteLogMessage(ELogVerbosity::Error, "Error. Switching to Error state at state \"%s\" with message \"%s\"", TCHAR_TO_ANSI(*m_sState), TCHAR_TO_ANSI(*sMessage));
+    WriteLogMessage(ELogVerbosity::Error, "Error. Switching to Error state at state \"%s\" with message \"%s\"", TCHAR_TO_ANSI(*m_sState.ToString()), TCHAR_TO_ANSI(*sMessage));
     SetNextState(g_ssStateError);
 }
 
-FString CACMachine::TickStateNone(int iTickType)
+FName CACMachine::TickStateNone(int iTickType)
 {
     return g_ssStateStart;
 }
 
-FString CACMachine::GetStateStartName() const
+FName CACMachine::GetStateStartName() const
 {
     return g_ssStateStart;
 }
 
-FString CACMachine::ErrorState(const FString &sMessage)
+FName CACMachine::ErrorState(const FString &sMessage)
 {
-    WriteLogMessage(ELogVerbosity::Error, "Error. Switching to Error state at state \"%s\" with message \"%s\"", TCHAR_TO_ANSI(*m_sState), TCHAR_TO_ANSI(*sMessage));
+    WriteLogMessage(ELogVerbosity::Error, "Error. Switching to Error state at state \"%s\" with message \"%s\"", TCHAR_TO_ANSI(*m_sState.ToString()), TCHAR_TO_ANSI(*sMessage));
     WriteStatesArchiveToErrorLog();
     m_sErrorMessage = sMessage;
     return g_ssStateError;
@@ -118,10 +121,10 @@ FString CACMachine::ErrorState(const FString &sMessage)
 void CACMachine::WriteStatesArchiveToErrorLog() const
 {
     FString str = "States archive: ";
-    std::list<FString>::const_iterator it = m_aStatesArchive.begin();
+    std::list<FName>::const_iterator it = m_aStatesArchive.begin();
     while (it != m_aStatesArchive.end())
     {
-        str += *it;
+        str += it->ToString();
         ++it;
         if (it != m_aStatesArchive.end())
         {
@@ -133,7 +136,7 @@ void CACMachine::WriteStatesArchiveToErrorLog() const
 
 FString CACMachine::GetLogPrefix() const
 {
-    FString prefix = "ACMachine : " + m_sNameMachine + "(" + m_sState + ") : ";
+    FString prefix = "ACMachine : " + m_sNameMachine + "(" + m_sState.ToString() + ") : ";
     return prefix;
 }
 
@@ -163,19 +166,19 @@ void CACMachine::SetLogSeverity(int iLogSeverityLevel)
     m_iLogSeverityLevel = iLogSeverityLevel;
 }
 
-bool CACMachine::RegisterState(const FString& sStateName, fnACStateHandler pStateHandler)
+bool CACMachine::RegisterState(const FName& sStateName, fnACStateHandler pStateHandler)
 {
     return m_aStateMap.insert(tStateMap::value_type(sStateName, pStateHandler)).second;
 }
 
-bool CACMachine::UnregisterState(const FString& sStateName)
+bool CACMachine::UnregisterState(const FName& sStateName)
 {
     return m_aStateMap.erase(sStateName) == 1;
 }
 
-bool CACMachine::SetNextState(const FString& sStateTo)
+bool CACMachine::SetNextState(const FName& sStateTo)
 {
-    if (!sStateTo.IsEmpty())
+    if (!sStateTo.IsNone())
     {
         tStateMap::const_iterator itStateMap = m_aStateMap.find(sStateTo);
         if (itStateMap != m_aStateMap.end())
@@ -185,7 +188,7 @@ bool CACMachine::SetNextState(const FString& sStateTo)
         }
         else
         {
-            SetNextErrorState(FString::Printf(TEXT("Failed to switch to state \"%s\""), *sStateTo));
+            SetNextErrorState(FString::Printf(TEXT("Failed to switch to state \"%s\""), *sStateTo.ToString()));
             m_sNextState = g_ssStateError;
         }
         return true;
