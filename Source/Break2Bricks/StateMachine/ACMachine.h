@@ -10,10 +10,10 @@
  * 
  */
 
-class CACMachine;
-typedef FName(CACMachine::*fnACStateHandler)(int);
+class ACMachine;
+typedef FName(ACMachine::*fnACStateHandler)(int);
 
-class CACMachine
+class ACMachine
 {
 public:
     enum TICK
@@ -23,8 +23,8 @@ public:
         TICK_StateFinished
     };
 
-    CACMachine(const FString &sName);
-    virtual ~CACMachine() {}
+    ACMachine(const FString &sName);
+    virtual ~ACMachine() {}
 
     void TickPublic(); // (not virtual, do not overload this function) call it to do state machine work
     bool IsInNoneState() const;
@@ -67,7 +67,7 @@ protected:
 
     void SetLogSeverity(int iLogSeverityLevel);
 
-    void WriteLogMessage(int iLevel, const char *sFormat, ...) const;
+    void WriteLogMessage(int iLevel, const FString &msg) const;
 
 private:
     bool SetNextState(const FName& sStateTo);
@@ -95,12 +95,6 @@ private:
 
 #define REGISTER_ACSTATE(ClassName, StateName) { bool bRegistered = RegisterState(#StateName, (fnACStateHandler)&ClassName::TickState##StateName); (void)bRegistered; check(bRegistered); }
 
+class ACMachine; typedef TSharedPtr<ACMachine> SP_ACMachine;
 
-class ACMachineElement; typedef TSharedPtr<ACMachineElement> SP_ACMachineElement;
-class CACMachine; typedef TSharedPtr<CACMachine> SP_ACMachine;
-
-typedef std::set<ACMachineElement*> ElementsContainer;
-typedef std::set<CACMachine*> MachinesContainer;
-class ElementManagerBase; typedef std::set<ElementManagerBase*> ElementsRDContainer;
-typedef std::vector<bool> BoolVector;
 

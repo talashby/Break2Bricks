@@ -3,6 +3,8 @@
 
 #include "Break2BricksPawn.generated.h"
 
+class ACMGeneral; typedef TSharedPtr<ACMGeneral> SP_ACMGeneral;
+
 UCLASS(config=Game)
 class ABreak2BricksPawn : public APawn
 {
@@ -23,4 +25,8 @@ protected:
 
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite)
 	class ABreak2BricksBlock* CurrentBlockFocus;
+
+private:
+
+    SP_ACMGeneral m_spACMGeneral;
 };

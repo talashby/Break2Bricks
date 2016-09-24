@@ -6,10 +6,14 @@
 #include "Kismet/HeadMountedDisplayFunctionLibrary.h"
 #include "DrawDebugHelpers.h"
 
+#include "ACMGeneral.h"
+
 ABreak2BricksPawn::ABreak2BricksPawn(const FObjectInitializer& ObjectInitializer) 
 	: Super(ObjectInitializer)
 {
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
+
+    m_spACMGeneral = SP_ACMGeneral(new ACMGeneral());
 }
 
 void ABreak2BricksPawn::Tick(float DeltaSeconds)
@@ -35,6 +39,9 @@ void ABreak2BricksPawn::Tick(float DeltaSeconds)
 			TraceForBlock(Start, End, false);
 		}
 	}
+
+    m_spACMGeneral->TickPublic();
+    //GetWorld()->GetFirstPlayerController()->ClientMessage("TEST log Message");
 }
 
 void ABreak2BricksPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

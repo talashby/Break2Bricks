@@ -7,43 +7,43 @@ static const FName g_ssStateNone("None");
 static const FName g_ssStateStart("Start");
 static const FName g_ssStateError("Error");
 
-CACMachine::CACMachine(const FString &sName)
+ACMachine::ACMachine(const FString &sName)
 {
     //UE_LOG(YourLog, Warning, TEXT("This is a message to yourself during runtime!"));
     m_iLogSeverityLevel = ELogVerbosity::Verbose;
     m_sNameMachine = sName;
-    REGISTER_ACSTATE(CACMachine, Start);
-    REGISTER_ACSTATE(CACMachine, Error);
+    REGISTER_ACSTATE(ACMachine, Start);
+    REGISTER_ACSTATE(ACMachine, Error);
 
     m_sState = g_ssStateNone;
-    m_fnCurrentState = (fnACStateHandler)&CACMachine::TickStateNone;
+    m_fnCurrentState = (fnACStateHandler)&ACMachine::TickStateNone;
     m_bRestart = false;
     //SetNextState(g_ssStateStart);
 }
 
-void CACMachine::TickPublic()
+void ACMachine::TickPublic()
 {
     OperateStates();
     Tick();
     TickHierarchical();
 }
 
-bool CACMachine::IsInNoneState() const
+bool ACMachine::IsInNoneState() const
 {
     return IsCurrentState(g_ssStateNone);
 }
 
-bool CACMachine::IsInStartState() const
+bool ACMachine::IsInStartState() const
 {
     return IsCurrentState(g_ssStateStart);
 }
 
-bool CACMachine::IsInErrorState() const
+bool ACMachine::IsInErrorState() const
 {
     return g_ssStateError == m_sState;
 }
 
-void CACMachine::OperateStates()
+void ACMachine::OperateStates()
 {
     FName sNextState;
     if (m_bRestart)
@@ -67,7 +67,7 @@ void CACMachine::OperateStates()
         if (LogHelper::CheckLogLevel(m_iLogSeverityLevel))
         {
             FString str = "Finished state: '" + m_sState.ToString() + "'. Start state: '" + m_sNextState.ToString() + "'";
-            WriteLogMessage(m_iLogSeverityLevel, TCHAR_TO_ANSI(*str));
+            WriteLogMessage(m_iLogSeverityLevel, str);
         }
         m_sLastState = m_sState;
         m_sState = m_sNextState;
@@ -79,46 +79,46 @@ void CACMachine::OperateStates()
     }
 }
 
-bool CACMachine::IsCurrentState(const FName &sStateName) const
+bool ACMachine::IsCurrentState(const FName &sStateName) const
 {
     return m_sState == sStateName;
 }
 
-bool CACMachine::IsLastState(const FName &sStateName) const
+bool ACMachine::IsLastState(const FName &sStateName) const
 {
     return m_sLastState == sStateName;
 }
 
-bool CACMachine::IsNextState(const FName &sStateName) const
+bool ACMachine::IsNextState(const FName &sStateName) const
 {
     return m_sNextState == sStateName;
 }
 
-void CACMachine::SetNextErrorState(const FString& sMessage/* = ""*/)
+void ACMachine::SetNextErrorState(const FString& sMessage/* = ""*/)
 {
-    WriteLogMessage(ELogVerbosity::Error, "Error. Switching to Error state at state \"%s\" with message \"%s\"", TCHAR_TO_ANSI(*m_sState.ToString()), TCHAR_TO_ANSI(*sMessage));
+    WriteLogMessage(ELogVerbosity::Error, FString::Printf(TEXT("Error. Switching to Error state at state \"%s\" with message \"%s\""), *m_sState.ToString(), *sMessage));
     SetNextState(g_ssStateError);
 }
 
-FName CACMachine::TickStateNone(int iTickType)
+FName ACMachine::TickStateNone(int iTickType)
 {
     return g_ssStateStart;
 }
 
-FName CACMachine::GetStateStartName() const
+FName ACMachine::GetStateStartName() const
 {
     return g_ssStateStart;
 }
 
-FName CACMachine::ErrorState(const FString &sMessage)
+FName ACMachine::ErrorState(const FString &sMessage)
 {
-    WriteLogMessage(ELogVerbosity::Error, "Error. Switching to Error state at state \"%s\" with message \"%s\"", TCHAR_TO_ANSI(*m_sState.ToString()), TCHAR_TO_ANSI(*sMessage));
+    WriteLogMessage(ELogVerbosity::Error, FString::Printf(TEXT("Error. Switching to Error state at state \"%s\" with message \"%s\""), *m_sState.ToString(), *sMessage));
     WriteStatesArchiveToErrorLog();
     m_sErrorMessage = sMessage;
     return g_ssStateError;
 }
 
-void CACMachine::WriteStatesArchiveToErrorLog() const
+void ACMachine::WriteStatesArchiveToErrorLog() const
 {
     FString str = "States archive: ";
     std::list<FName>::const_iterator it = m_aStatesArchive.begin();
@@ -131,52 +131,52 @@ void CACMachine::WriteStatesArchiveToErrorLog() const
             str += " -> ";
         }
     }
-    WriteLogMessage(ELogVerbosity::Error, TCHAR_TO_ANSI(*str));
+    WriteLogMessage(ELogVerbosity::Error, str);
 }
 
-FString CACMachine::GetLogPrefix() const
+FString ACMachine::GetLogPrefix() const
 {
     FString prefix = "ACMachine : " + m_sNameMachine + "(" + m_sState.ToString() + ") : ";
     return prefix;
 }
 
-FString CACMachine::GetName() const
+FString ACMachine::GetName() const
 {
     return m_sNameMachine;
 }
 
-void CACMachine::SetName(const FString &sName)
+void ACMachine::SetName(const FString &sName)
 {
     m_sNameMachine = sName;
 }
 
-void CACMachine::SetStateExternalSignal(int iExternalSignal)
+void ACMachine::SetStateExternalSignal(int iExternalSignal)
 {
-    WriteLogMessage(m_iLogSeverityLevel, "External signal was set : %d", iExternalSignal);
+    WriteLogMessage(m_iLogSeverityLevel, FString::Printf(TEXT("External signal was set : %d"), iExternalSignal));
     m_iStateExternalSignal = iExternalSignal;
 }
 
-bool CACMachine::IsStateExternalSignal(int iExternalSignal) const
+bool ACMachine::IsStateExternalSignal(int iExternalSignal) const
 {
     return iExternalSignal == m_iStateExternalSignal;
 }
 
-void CACMachine::SetLogSeverity(int iLogSeverityLevel)
+void ACMachine::SetLogSeverity(int iLogSeverityLevel)
 {
     m_iLogSeverityLevel = iLogSeverityLevel;
 }
 
-bool CACMachine::RegisterState(const FName& sStateName, fnACStateHandler pStateHandler)
+bool ACMachine::RegisterState(const FName& sStateName, fnACStateHandler pStateHandler)
 {
     return m_aStateMap.insert(tStateMap::value_type(sStateName, pStateHandler)).second;
 }
 
-bool CACMachine::UnregisterState(const FName& sStateName)
+bool ACMachine::UnregisterState(const FName& sStateName)
 {
     return m_aStateMap.erase(sStateName) == 1;
 }
 
-bool CACMachine::SetNextState(const FName& sStateTo)
+bool ACMachine::SetNextState(const FName& sStateTo)
 {
     if (!sStateTo.IsNone())
     {
@@ -196,25 +196,17 @@ bool CACMachine::SetNextState(const FName& sStateTo)
     return false;
 }
 
-void CACMachine::WriteLogMessage(int iLevel, const char *sFormat, ...) const
+void ACMachine::WriteLogMessage(int iLevel, const FString &msg) const
 {
-    va_list args;
-    va_start(args, sFormat);
-
-    char sCommunicatorMessage[2048];
-    vsnprintf(sCommunicatorMessage, 2048, sFormat, args);
-
-    va_end(args);
-
-    //WRITE_LOG_MESSAGE(iLevel, 0, "%s%s", GetLogPrefix().c_str(), sCommunicatorMessage);
+    FMsg::Logf("", 0, TEXT(""), (ELogVerbosity::Type)iLevel, *(GetLogPrefix() + msg));
 }
 
-void CACMachine::BeforeTickStateStartedHierarchical()
+void ACMachine::BeforeTickStateStartedHierarchical()
 {
     m_iStateExternalSignal = EXTERNAL_SIGNAL_None;
 }
 
-void CACMachine::Restart()
+void ACMachine::Restart()
 {
     m_bRestart = true;
     OperateStates();
