@@ -6,6 +6,8 @@
 /**
  * 
  */
+class ACMPlayingField; typedef TSharedPtr<ACMPlayingField> SP_ACMPlayingField;
+
 class ACMGeneral : public ACMachine
 {
 public:
@@ -14,7 +16,10 @@ public:
 
 protected:
     virtual FName TickStateStart(int iTickType);
-    FName TickStateGame();
+    FName TickStateGame(int iTickType);
+
+private:
+    SP_ACMPlayingField spACMPlayingField;
 };
 
 class ACMGeneral; typedef TSharedPtr<ACMGeneral> SP_ACMGeneral;
