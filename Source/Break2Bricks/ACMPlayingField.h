@@ -1,27 +1,13 @@
 #pragma once
 
 #include "StateMachine/ACMachine.h"
-//#include "GameFramework/Actor.h"
+class ABreak2BricksPawn;
 
-//UCLASS(minimalapi)
-class ACMPlayingField : /*public AActor, */public ACMachine
+class ACMPlayingField : public ACMachine
 {
-    //GENERATED_BODY()
-
-    /** Dummy root component */
-	//UPROPERTY(Category = Grid, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	//class USceneComponent* DummyRoot;
 public:
-    ACMPlayingField();
+    ACMPlayingField(ABreak2BricksPawn *owner);
     virtual ~ACMPlayingField();
-
-	/** Number of blocks along each side of grid */
-	UPROPERTY(Category = Grid, EditAnywhere, BlueprintReadOnly)
-		int32 Size;
-
-	/** Spacing of blocks */
-	UPROPERTY(Category = Grid, EditAnywhere, BlueprintReadOnly)
-		float BlockSpacing;
 
 protected:
 
@@ -29,7 +15,8 @@ protected:
     FName TickStateGame(int iTickType);
 
 private:
-
+	ABreak2BricksPawn *pOwnerActor;
+	class ABreak2BricksBlockGrid *pGridActor;
 
 };
 

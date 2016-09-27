@@ -3,11 +3,14 @@
 #include "Break2Bricks.h"
 #include "ACMGeneral.h"
 #include "ACMPlayingField.h"
+#include "Break2BricksPawn.h"
 
 static const FName g_ssGame("Game");
 
-ACMGeneral::ACMGeneral() : ACMachine("ACMGeneral")
+ACMGeneral::ACMGeneral(ABreak2BricksPawn *owner) : ACMachine("ACMGeneral")
 {
+	pOwnerActor = owner;
+
     REGISTER_ACSTATE(ACMGeneral, Game);
 }
 
@@ -28,7 +31,7 @@ FName ACMGeneral::TickStateGame(int iTickType)
 {
     if (ACMachine::TICK_StateStarted == iTickType)
     {
-        spACMPlayingField = SP_ACMPlayingField(new ACMPlayingField());
+        spACMPlayingField = SP_ACMPlayingField(new ACMPlayingField(pOwnerActor));
     }
     else if (ACMachine::TICK_StateNormal == iTickType)
     {

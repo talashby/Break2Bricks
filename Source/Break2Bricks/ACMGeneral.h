@@ -7,11 +7,12 @@
  * 
  */
 class ACMPlayingField; typedef TSharedPtr<ACMPlayingField> SP_ACMPlayingField;
+class ABreak2BricksPawn;
 
 class ACMGeneral : public ACMachine
 {
 public:
-	ACMGeneral();
+	ACMGeneral(ABreak2BricksPawn *owner);
 	virtual ~ACMGeneral();
 
 protected:
@@ -20,6 +21,7 @@ protected:
 
 private:
     SP_ACMPlayingField spACMPlayingField;
+	ABreak2BricksPawn *pOwnerActor;
 };
 
 class ACMGeneral; typedef TSharedPtr<ACMGeneral> SP_ACMGeneral;

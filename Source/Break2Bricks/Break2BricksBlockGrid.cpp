@@ -21,7 +21,8 @@ ABreak2BricksBlockGrid::ABreak2BricksBlockGrid()
 	ScoreText->SetupAttachment(DummyRoot);
 
 	// Set defaults
-	Size = 3;
+	SizeX = 3;
+	SizeY = 3;
 	BlockSpacing = 300.f;
 }
 
@@ -31,7 +32,7 @@ void ABreak2BricksBlockGrid::BeginPlay()
 	Super::BeginPlay();
 
 	// Number of blocks
-	const int32 NumBlocks = Size * Size;
+	/*const int32 NumBlocks = Size * Size;
 
 	// Loop to spawn each block
 	for(int32 BlockIndex=0; BlockIndex<NumBlocks; BlockIndex++)
@@ -50,7 +51,7 @@ void ABreak2BricksBlockGrid::BeginPlay()
 		{
 			NewBlock->OwningGrid = this;
 		}
-	}
+	}*/
 }
 
 

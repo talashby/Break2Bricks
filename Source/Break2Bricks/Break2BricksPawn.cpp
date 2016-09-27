@@ -13,7 +13,7 @@ ABreak2BricksPawn::ABreak2BricksPawn(const FObjectInitializer& ObjectInitializer
 {
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 
-    m_spACMGeneral = SP_ACMGeneral(new ACMGeneral());
+    m_spACMGeneral = SP_ACMGeneral(new ACMGeneral(this));
 }
 
 void ABreak2BricksPawn::Tick(float DeltaSeconds)

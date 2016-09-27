@@ -24,8 +24,11 @@ public:
 	int32 Score;
 
 	/** Number of blocks along each side of grid */
-	UPROPERTY(Category=Grid, EditAnywhere, BlueprintReadOnly)
-	int32 Size;
+	UPROPERTY(Category = Grid, EditAnywhere, BlueprintReadOnly)
+		int32 SizeX;
+	/** Number of blocks along each side of grid */
+	UPROPERTY(Category = Grid, EditAnywhere, BlueprintReadOnly)
+		int32 SizeY;
 
 	/** Spacing of blocks */
 	UPROPERTY(Category=Grid, EditAnywhere, BlueprintReadOnly)
