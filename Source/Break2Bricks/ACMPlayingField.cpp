@@ -12,6 +12,7 @@ static const FName g_ssGame("Game");
 ACMPlayingField::ACMPlayingField(ABreak2BricksPawn *owner) : ACMachine("ACMPlayingField")
 {
 	pOwnerActor = owner;
+	bNoMoreMoves = false;
 
     REGISTER_ACSTATE(ACMPlayingField, Game);
 }
@@ -102,6 +103,33 @@ void ACMPlayingField::RelocateBlocks()
 	}
 }
 
+void ACMPlayingField::CheckNoMoreMoves()
+{
+	bNoMoreMoves = true;
+	for (int32 iBlockIndexX = 0; iBlockIndexX < pGridActor->SizeX; ++iBlockIndexX)
+	{
+		for (int32 iBlockIndexY = 0; iBlockIndexY < pGridActor->SizeY; ++iBlockIndexY)
+		{
+			tBlockSet aBlocks;
+			ABreak2BricksBlock *pBlock = aBlocksField[iBlockIndexX][iBlockIndexY];
+			if (nullptr != pBlock)
+			{
+				aBlocks.insert(pBlock);
+				FindSameNearBlocks(aBlocks, pBlock);
+				if (1 < aBlocks.size())
+				{
+					bNoMoreMoves = false;
+					break;
+				}
+			}
+		}
+		if (!bNoMoreMoves)
+		{
+			break;
+		}
+	}
+}
+
 void ACMPlayingField::Clicked(ABreak2BricksBlock *pBlock, int iXPos, int iYPos)
 {
 	tBlockSet aBlocks;
@@ -153,6 +181,7 @@ void ACMPlayingField::Clicked(ABreak2BricksBlock *pBlock, int iXPos, int iYPos)
 		}
 	}
 	RelocateBlocks();
+	CheckNoMoreMoves();
 }
 
 void ACMPlayingField::Tick()
@@ -177,10 +206,26 @@ FName ACMPlayingField::TickStateStart(int iTickType)
 		}
 		else
 		{
-			return ErrorState("ABreak2BricksBlockGrid not found");
+			return ErrorState("ABreak2BricksBlockGrid not found"); // ******************************* State Finished ********************************
 		}
 
 		//ABreak2BricksBlockGrid* NewBlock = pOwnerActor->GetWorld()->SpawnActor<ABreak2BricksBlockGrid>();
+
+		if (0 < aBlocksField.size()) // restart case
+		{
+			for (int32 iBlockIndexX = 0; iBlockIndexX < pGridActor->SizeX; ++iBlockIndexX)
+			{
+				for (int32 iBlockIndexY = 0; iBlockIndexY < pGridActor->SizeY; ++iBlockIndexY)
+				{
+					ABreak2BricksBlock *pBlock = aBlocksField[iBlockIndexX][iBlockIndexY];
+					if (nullptr != pBlock)
+					{
+						pBlock->Destroy();
+					}
+				}
+			}
+		}
+		aBlocksField.clear();
 
         // Loop to spawn each block
 		for (int32 iBlockIndexX = 0; iBlockIndexX < pGridActor->SizeX; ++iBlockIndexX)
@@ -192,7 +237,7 @@ FName ACMPlayingField::TickStateStart(int iTickType)
 				ABreak2BricksBlock* pNewBlock = pOwnerActor->GetWorld()->SpawnActor<ABreak2BricksBlock>(FVector(0, 0, 0), FRotator(0, 0, 0));
 				aBlocksField.back().push_back(pNewBlock);
 
-				int32 iRand = std::rand() % 3;
+				int32 iRand = rand() % 3;
 				pNewBlock->Init(this, iRand, aBlocksField.size()-1, aBlocksField.back().size()-1);
 				// Tell the block about its owner
 				if (pNewBlock != nullptr)
@@ -220,12 +265,23 @@ FName ACMPlayingField::TickStateStart(int iTickType)
             }
         }*/
 
-        return g_ssGame;
+        return g_ssGame; // ******************************* State Finished ********************************
     }
     return "";
 }
 
 FName ACMPlayingField::TickStateGame(int iTickType)
 {
+	if (ACMachine::TICK_StateStarted == iTickType)
+	{
+	}
+	else if (ACMachine::TICK_StateNormal == iTickType)
+	{
+		if (bNoMoreMoves)
+		{
+			bNoMoreMoves = false;
+			return GetStateStartName(); // ******************************* State Finished ********************************
+		}
+	}
     return "";
 }

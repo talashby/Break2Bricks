@@ -51,10 +51,10 @@ public:
 	void Highlight(bool bOn);
 
 	int32 GetXPos() const { return iXPos; }
-	int32 SetXPos(int32 iXPos_) { iXPos = iXPos_; }
+	void SetXPos(int32 iXPos_) { iXPos = iXPos_; }
 
 	int32 GetYPos() const { return iYPos; }
-	int32 SetYPos(int32 iYPos_) { iYPos = iYPos_; }
+	void SetYPos(int32 iYPos_) { iYPos = iYPos_; }
 
 	int32 GetType() const { return iType; }
 

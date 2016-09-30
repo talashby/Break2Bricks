@@ -26,6 +26,9 @@ private:
 	void FindSameNearBlocks(tBlockSet &aBlocks, ABreak2BricksBlock *pBlock);
 	void MoveBlock(ABreak2BricksBlock *pBlock, int32 iDistinationX, int32 iDistinationY);
 	void RelocateBlocks();
+	void CheckNoMoreMoves();
+
+	bool bNoMoreMoves;
 	ABreak2BricksPawn *pOwnerActor;
 	class ABreak2BricksBlockGrid *pGridActor;
 
