@@ -3,6 +3,7 @@
 #include "GameFramework/Actor.h"
 #include "Break2BricksBlock.generated.h"
 
+class ACMPlayingField;
 /** A block that can be clicked */
 UCLASS(minimalapi)
 class ABreak2BricksBlock : public AActor
@@ -19,9 +20,7 @@ class ABreak2BricksBlock : public AActor
 
 public:
 	ABreak2BricksBlock();
-
-	/** Are we currently active? */
-	bool bIsActive;
+	void Init(ACMPlayingField *pOwnerACM_, int32 iType_, int32 iX, int32 iY);
 
 	/** Pointer to white material used on the focused block */
 	UPROPERTY()
@@ -51,11 +50,26 @@ public:
 
 	void Highlight(bool bOn);
 
+	int32 GetXPos() const { return iXPos; }
+	int32 SetXPos(int32 iXPos_) { iXPos = iXPos_; }
+
+	int32 GetYPos() const { return iYPos; }
+	int32 SetYPos(int32 iYPos_) { iYPos = iYPos_; }
+
+	int32 GetType() const { return iType; }
+
 public:
 	/** Returns DummyRoot subobject **/
 	FORCEINLINE class USceneComponent* GetDummyRoot() const { return DummyRoot; }
 	/** Returns BlockMesh subobject **/
 	FORCEINLINE class UStaticMeshComponent* GetBlockMesh() const { return BlockMesh; }
+
+private:
+	int32 iType;
+	int32 iXPos;
+	int32 iYPos;
+
+	ACMPlayingField *pOwnerACM;
 };
 
 

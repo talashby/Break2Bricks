@@ -3,6 +3,7 @@
 #include "Break2Bricks.h"
 #include "Break2BricksBlock.h"
 #include "Break2BricksBlockGrid.h"
+#include "ACMPlayingField.h"
 
 ABreak2BricksBlock::ABreak2BricksBlock()
 {
@@ -43,6 +44,28 @@ ABreak2BricksBlock::ABreak2BricksBlock()
 	OrangeMaterial = ConstructorStatics.OrangeMaterial.Get();
 }
 
+void ABreak2BricksBlock::Init(ACMPlayingField *pOwnerACM_, int32 iType_, int32 iX, int32 iY)
+{
+	pOwnerACM = pOwnerACM_;
+	iType = iType_;
+	iXPos = iX;
+	iYPos = iY;
+	switch (iType_)
+	{
+	case 0:
+		BlockMesh->SetMaterial(0, BaseMaterial);
+		break;
+	case 1:
+		BlockMesh->SetMaterial(0, BlueMaterial);
+		break;
+	case 2:
+		BlockMesh->SetMaterial(0, OrangeMaterial);
+		break;
+	default:
+		break;
+	}
+}
+
 void ABreak2BricksBlock::BlockClicked(UPrimitiveComponent* ClickedComp, FKey ButtonClicked)
 {
 	HandleClicked();
@@ -56,30 +79,21 @@ void ABreak2BricksBlock::OnFingerPressedBlock(ETouchIndex::Type FingerIndex, UPr
 
 void ABreak2BricksBlock::HandleClicked()
 {
-	// Check we are not already active
-	if (!bIsActive)
+	pOwnerACM->Clicked(this, iXPos, iYPos);
+	// Change material
+	/*BlockMesh->SetMaterial(0, OrangeMaterial);
+
+	// Tell the Grid
+	if (OwningGrid != nullptr)
 	{
-		bIsActive = true;
-
-		// Change material
-		BlockMesh->SetMaterial(0, OrangeMaterial);
-
-		// Tell the Grid
-		if (OwningGrid != nullptr)
-		{
-			OwningGrid->AddScore();
-		}
+		OwningGrid->AddScore();
 	}
+	*/
 }
 
 void ABreak2BricksBlock::Highlight(bool bOn)
 {
-	// Do not highlight if the block has already been activated.
-	if (bIsActive)
-	{
-		return;
-	}
-
+	/*
 	if (bOn)
 	{
 		BlockMesh->SetMaterial(0, BaseMaterial);
@@ -87,5 +101,5 @@ void ABreak2BricksBlock::Highlight(bool bOn)
 	else
 	{
 		BlockMesh->SetMaterial(0, BlueMaterial);
-	}
+	}*/
 }
