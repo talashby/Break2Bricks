@@ -6,8 +6,11 @@
 #include "Break2BricksBlock.h"
 #include "Break2BricksPawn.h"
 #include "EngineUtils.h"
+#include <algorithm>
 
 static const FName g_ssGame("Game");
+static const FName g_ssAnimDropDown("AnimDropDown");
+static const FName g_ssConnectColumns("AnimConnectColumns");
 
 ACMPlayingField::ACMPlayingField(ABreak2BricksPawn *owner) : ACMachine("ACMPlayingField")
 {
@@ -15,6 +18,8 @@ ACMPlayingField::ACMPlayingField(ABreak2BricksPawn *owner) : ACMachine("ACMPlayi
 	bNoMoreMoves = false;
 
     REGISTER_ACSTATE(ACMPlayingField, Game);
+	REGISTER_ACSTATE(ACMPlayingField, AnimDropDown);
+	REGISTER_ACSTATE(ACMPlayingField, AnimConnectColumns);
 }
 
 
@@ -66,6 +71,12 @@ void ACMPlayingField::MoveBlock(ABreak2BricksBlock *pBlock, int32 iDistinationX,
 	if (nullptr == pBlock)
 	{
 		return;
+	}
+	int iSteps = pBlock->GetYPos() - iDistinationY;
+	if (0 < iSteps)
+	{
+		pBlock->AnimDropDown(iSteps);
+		aAnimDropDownBlocks.push_back(pBlock);
 	}
 	aBlocksField[pBlock->GetXPos()][pBlock->GetYPos()] = nullptr;
 	aBlocksField[iDistinationX][iDistinationY] = pBlock;
@@ -132,56 +143,44 @@ void ACMPlayingField::CheckNoMoreMoves()
 
 void ACMPlayingField::Clicked(ABreak2BricksBlock *pBlock, int iXPos, int iYPos)
 {
-	tBlockSet aBlocks;
-	aBlocks.insert(pBlock);
-	FindSameNearBlocks(aBlocks, pBlock);
-	if (aBlocks.size() > 1)
+	if (IsCurrentState(g_ssGame))
 	{
-		for (ABreak2BricksBlock *pBlockIter : aBlocks)
+		tBlockSet aBlocks;
+		aBlocks.insert(pBlock);
+		FindSameNearBlocks(aBlocks, pBlock);
+		if (aBlocks.size() > 1)
 		{
-			int32 iXPosIter = pBlockIter->GetXPos();
-			int32 iYPosIter = pBlockIter->GetYPos();
-			check(pBlockIter == aBlocksField[iXPosIter][iYPosIter]);
-			aBlocksField[iXPosIter][iYPosIter] = nullptr;
-			bool bDestroyed = pBlockIter->Destroy();
-			check(bDestroyed);
-		}
+			SetStateExternalSignal(EXTERNAL_SIGNAL_1);
+			for (ABreak2BricksBlock *pBlockIter : aBlocks)
+			{
+				int32 iXPosIter = pBlockIter->GetXPos();
+				int32 iYPosIter = pBlockIter->GetYPos();
+				check(pBlockIter == aBlocksField[iXPosIter][iYPosIter]);
+				aBlocksField[iXPosIter][iYPosIter] = nullptr;
+				bool bDestroyed = pBlockIter->Destroy();
+				check(bDestroyed);
+			}
 
-		// gravitation up to down
-		for (int32 iBlockIndexX = 0; iBlockIndexX < pGridActor->SizeX; ++iBlockIndexX)
-		{
-			int32 iDownStep = 0;
-			for (int32 iBlockIndexY = 0; iBlockIndexY < pGridActor->SizeY; ++iBlockIndexY)
+			// gravitation up to down
+			for (int32 iBlockIndexX = 0; iBlockIndexX < pGridActor->SizeX; ++iBlockIndexX)
 			{
-				if (aBlocksField[iBlockIndexX][iBlockIndexY] == nullptr)
-				{
-					++iDownStep;
-				}
-				else if (iDownStep > 0)
-				{
-					MoveBlock(aBlocksField[iBlockIndexX][iBlockIndexY], iBlockIndexX, iBlockIndexY - iDownStep);
-				}
-			}
-		}
-		// connect columns
-		int32 iLeftStep = 0;
-		for (int32 iBlockIndexX = 0; iBlockIndexX < pGridActor->SizeX; ++iBlockIndexX)
-		{
-			if (nullptr == aBlocksField[iBlockIndexX][0])
-			{
-				++iLeftStep;
-			}
-			else if (iLeftStep > 0)
-			{
+				int32 iDownStep = 0;
 				for (int32 iBlockIndexY = 0; iBlockIndexY < pGridActor->SizeY; ++iBlockIndexY)
 				{
-					MoveBlock(aBlocksField[iBlockIndexX][iBlockIndexY], iBlockIndexX - iLeftStep, iBlockIndexY);
+					if (aBlocksField[iBlockIndexX][iBlockIndexY] == nullptr)
+					{
+						++iDownStep;
+					}
+					else if (iDownStep > 0)
+					{
+						MoveBlock(aBlocksField[iBlockIndexX][iBlockIndexY], iBlockIndexX, iBlockIndexY - iDownStep);
+					}
 				}
 			}
 		}
+		//RelocateBlocks();
+		CheckNoMoreMoves();
 	}
-	RelocateBlocks();
-	CheckNoMoreMoves();
 }
 
 void ACMPlayingField::Tick()
@@ -234,15 +233,19 @@ FName ACMPlayingField::TickStateStart(int iTickType)
 			for (int32 iBlockIndexY = 0; iBlockIndexY < pGridActor->SizeY; ++iBlockIndexY)
 			{
 				// Spawn a block
-				ABreak2BricksBlock* pNewBlock = pOwnerActor->GetWorld()->SpawnActor<ABreak2BricksBlock>(FVector(0, 0, 0), FRotator(0, 0, 0));
-				aBlocksField.back().push_back(pNewBlock);
-
+				//ABreak2BricksBlock* pNewBlock = pOwnerActor->GetWorld()->SpawnActor<ABreak2BricksBlock>(FVector(0, 0, 0), FRotator(0, 0, 0));
 				int32 iRand = rand() % 3;
-				pNewBlock->Init(this, iRand, aBlocksField.size()-1, aBlocksField.back().size()-1);
-				// Tell the block about its owner
-				if (pNewBlock != nullptr)
+				if (pGridActor->aABPBlocks.size() > iRand)
 				{
-					pNewBlock->OwningGrid = pGridActor;
+					ABreak2BricksBlock* pNewBlock = SpawnBP<ABreak2BricksBlock>(pOwnerActor->GetWorld(), pGridActor->aABPBlocks[iRand], FVector(0, 0, 0), FRotator(0, 0, 0));
+					aBlocksField.back().push_back(pNewBlock);
+
+					
+					pNewBlock->Init(this, pGridActor, iRand, aBlocksField.size() - 1, aBlocksField.back().size() - 1);
+				}
+				else
+				{
+					WriteLogMessage(ELogVerbosity::Error, "Can't create block actor.");
 				}
 			}
 		}
@@ -277,6 +280,10 @@ FName ACMPlayingField::TickStateGame(int iTickType)
 	}
 	else if (ACMachine::TICK_StateNormal == iTickType)
 	{
+		if (IsStateExternalSignal(EXTERNAL_SIGNAL_1))
+		{
+			return g_ssAnimDropDown; // ******************************* State Finished ********************************
+		}
 		if (bNoMoreMoves)
 		{
 			bNoMoreMoves = false;
@@ -284,4 +291,69 @@ FName ACMPlayingField::TickStateGame(int iTickType)
 		}
 	}
     return "";
+}
+
+FName ACMPlayingField::TickStateAnimDropDown(int iTickType)
+{
+	if (ACMachine::TICK_StateStarted == iTickType)
+	{
+	}
+	else if (ACMachine::TICK_StateNormal == iTickType)
+	{
+		aAnimDropDownBlocks.erase(std::remove_if(aAnimDropDownBlocks.begin(), aAnimDropDownBlocks.end(),
+			[](const ABreak2BricksBlock* pBlockIter) { return !pBlockIter->bAnimDropDown; }), aAnimDropDownBlocks.end());
+
+		if (aAnimDropDownBlocks.empty())
+		{
+			// connect columns
+			int32 iLeftStep = 0;
+			for (int32 iBlockIndexX = 0; iBlockIndexX < pGridActor->SizeX; ++iBlockIndexX)
+			{
+				if (nullptr == aBlocksField[iBlockIndexX][0])
+				{
+					++iLeftStep;
+				}
+				else if (iLeftStep > 0)
+				{
+					for (int32 iBlockIndexY = 0; iBlockIndexY < pGridActor->SizeY; ++iBlockIndexY)
+					{
+						ABreak2BricksBlock *pBlock = aBlocksField[iBlockIndexX][iBlockIndexY];
+						if (pBlock)
+						{
+							MoveBlock(pBlock, iBlockIndexX - iLeftStep, iBlockIndexY);
+							pBlock->AnimConnectColumns(iLeftStep);
+							aAnimConnectColumns.push_back(pBlock);
+						}
+					}
+				}
+			}
+			if (aAnimConnectColumns.size())
+			{
+				return g_ssConnectColumns; // ******************************* State Finished ********************************
+			}
+			else
+			{
+				return g_ssGame; // ******************************* State Finished ********************************
+			}
+		}
+	}
+	return "";
+}
+
+FName ACMPlayingField::TickStateAnimConnectColumns(int iTickType)
+{
+	if (ACMachine::TICK_StateStarted == iTickType)
+	{
+		check(aAnimConnectColumns.size());
+	}
+	else if (ACMachine::TICK_StateNormal == iTickType)
+	{
+		aAnimConnectColumns.erase(std::remove_if(aAnimConnectColumns.begin(), aAnimConnectColumns.end(),
+			[](const ABreak2BricksBlock* pBlockIter) { return !pBlockIter->bAnimConnectColumns; }), aAnimConnectColumns.end());
+		if (!aAnimConnectColumns.size())
+		{
+			return g_ssGame; // ******************************* State Finished ********************************
+		}
+	}
+	return "";
 }

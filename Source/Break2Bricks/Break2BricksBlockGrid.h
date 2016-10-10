@@ -1,6 +1,7 @@
 // Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
 #pragma once
 #include "GameFramework/Actor.h"
+#include <vector>
 #include "Break2BricksBlockGrid.generated.h"
 
 /** Class used to spawn blocks and manage score */
@@ -40,6 +41,8 @@ public:
 
 	/** Handle the block being clicked */
 	void AddScore();
+
+	std::vector< TSubclassOf<class ABreak2BricksBlock> > aABPBlocks; // blueprint classes
 
 public:
 	/** Returns DummyRoot subobject **/

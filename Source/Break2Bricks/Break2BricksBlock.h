@@ -18,9 +18,21 @@ class ABreak2BricksBlock : public AActor
 	UPROPERTY(Category = Block, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UStaticMeshComponent* BlockMesh;
 
+	/** Grid that owns us */
+	UPROPERTY(Category = Block, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	class ABreak2BricksBlockGrid* OwningGrid;
+
 public:
 	ABreak2BricksBlock();
-	void Init(ACMPlayingField *pOwnerACM_, int32 iType_, int32 iX, int32 iY);
+	void Init(ACMPlayingField *pOwnerACM_, ABreak2BricksBlockGrid *pOwnerGrid_, int32 iType_, int32 iX, int32 iY);
+
+	/** Is drop down animation played */
+	UPROPERTY(Category = Block, VisibleDefaultsOnly, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	bool bAnimDropDown;
+
+	/** Is drop down animation played */
+	UPROPERTY(Category = Block, VisibleDefaultsOnly, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	bool bAnimConnectColumns;
 
 	/** Pointer to white material used on the focused block */
 	UPROPERTY()
@@ -34,10 +46,6 @@ public:
 	UPROPERTY()
 	class UMaterialInstance* OrangeMaterial;
 
-	/** Grid that owns us */
-	UPROPERTY()
-	class ABreak2BricksBlockGrid* OwningGrid;
-
 	/** Handle the block being clicked */
 	UFUNCTION()
 	void BlockClicked(UPrimitiveComponent* ClickedComp, FKey ButtonClicked);
@@ -45,6 +53,12 @@ public:
 	/** Handle the block being touched  */
 	UFUNCTION()
 	void OnFingerPressedBlock(ETouchIndex::Type FingerIndex, UPrimitiveComponent* TouchedComponent);
+
+	UFUNCTION(Category = "Animation", BlueprintImplementableEvent, BlueprintCallable)
+	void AnimDropDown(int32 iSteps);
+
+	UFUNCTION(Category = "Animation", BlueprintImplementableEvent, BlueprintCallable)
+	void AnimConnectColumns(int32 iSteps);
 
 	void HandleClicked();
 

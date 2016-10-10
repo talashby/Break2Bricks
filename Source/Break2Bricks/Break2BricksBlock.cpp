@@ -38,28 +38,31 @@ ABreak2BricksBlock::ABreak2BricksBlock()
 	BlockMesh->OnClicked.AddDynamic(this, &ABreak2BricksBlock::BlockClicked);
 	BlockMesh->OnInputTouchBegin.AddDynamic(this, &ABreak2BricksBlock::OnFingerPressedBlock);
 
-	// Save a pointer to the orange material
 	BaseMaterial = ConstructorStatics.BaseMaterial.Get();
 	BlueMaterial = ConstructorStatics.BlueMaterial.Get();
 	OrangeMaterial = ConstructorStatics.OrangeMaterial.Get();
+
+	bAnimDropDown = false;
+	bAnimConnectColumns = false;
 }
 
-void ABreak2BricksBlock::Init(ACMPlayingField *pOwnerACM_, int32 iType_, int32 iX, int32 iY)
+void ABreak2BricksBlock::Init(ACMPlayingField *pOwnerACM_, ABreak2BricksBlockGrid *pOwnerGrid_, int32 iType_, int32 iX, int32 iY)
 {
 	pOwnerACM = pOwnerACM_;
+	OwningGrid = pOwnerGrid_;
 	iType = iType_;
 	iXPos = iX;
 	iYPos = iY;
 	switch (iType_)
 	{
 	case 0:
-		BlockMesh->SetMaterial(0, BaseMaterial);
+		//BlockMesh->SetMaterial(0, BaseMaterial);
 		break;
 	case 1:
-		BlockMesh->SetMaterial(0, BlueMaterial);
+		//BlockMesh->SetMaterial(0, BlueMaterial);
 		break;
 	case 2:
-		BlockMesh->SetMaterial(0, OrangeMaterial);
+		//BlockMesh->SetMaterial(0, OrangeMaterial);
 		break;
 	default:
 		break;

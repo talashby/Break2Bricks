@@ -20,6 +20,21 @@ ABreak2BricksBlockGrid::ABreak2BricksBlockGrid()
 	ScoreText->SetText(FText::Format(LOCTEXT("ScoreFmt", "Score: {0}"), FText::AsNumber(0)));
 	ScoreText->SetupAttachment(DummyRoot);
 
+	static ConstructorHelpers::FObjectFinder<UBlueprint> ItemBlueprint1(TEXT("Blueprint'/Game/Blueprints/BP_Block1.BP_Block1'"));
+	if (ItemBlueprint1.Object)
+	{
+		aABPBlocks.push_back((UClass*)ItemBlueprint1.Object->GeneratedClass);
+	}
+	static ConstructorHelpers::FObjectFinder<UBlueprint> ItemBlueprint2(TEXT("Blueprint'/Game/Blueprints/BP_Block2.BP_Block2'"));
+	if (ItemBlueprint2.Object)
+	{
+		aABPBlocks.push_back((UClass*)ItemBlueprint2.Object->GeneratedClass);
+	}
+	static ConstructorHelpers::FObjectFinder<UBlueprint> ItemBlueprint3(TEXT("Blueprint'/Game/Blueprints/BP_Block3.BP_Block3'"));
+	if (ItemBlueprint3.Object)
+	{
+		aABPBlocks.push_back((UClass*)ItemBlueprint3.Object->GeneratedClass);
+	}
 	// Set defaults
 	SizeX = 3;
 	SizeY = 3;

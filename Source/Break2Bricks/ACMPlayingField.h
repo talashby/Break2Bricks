@@ -20,6 +20,8 @@ protected:
 	void Tick() override;
     virtual FName TickStateStart(int iTickType) override;
     FName TickStateGame(int iTickType);
+	FName TickStateAnimDropDown(int iTickType);
+	FName TickStateAnimConnectColumns(int iTickType);
 
 private:
 	void CheckBlockForFindSameNearBlocks(tBlockSet &aBlocks, ABreak2BricksBlock *pBlock, ABreak2BricksBlock *pBlockNear);
@@ -33,5 +35,7 @@ private:
 	class ABreak2BricksBlockGrid *pGridActor;
 
 	std::vector< tBlockVector > aBlocksField;
+	tBlockVector aAnimDropDownBlocks;
+	tBlockVector aAnimConnectColumns;
 };
 
