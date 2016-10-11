@@ -15,7 +15,6 @@ static const FName g_ssConnectColumns("AnimConnectColumns");
 ACMPlayingField::ACMPlayingField(ABreak2BricksPawn *owner) : ACMachine("ACMPlayingField")
 {
 	pOwnerActor = owner;
-	bNoMoreMoves = false;
 
     REGISTER_ACSTATE(ACMPlayingField, Game);
 	REGISTER_ACSTATE(ACMPlayingField, AnimDropDown);
@@ -72,19 +71,14 @@ void ACMPlayingField::MoveBlock(ABreak2BricksBlock *pBlock, int32 iDistinationX,
 	{
 		return;
 	}
-	int iSteps = pBlock->GetYPos() - iDistinationY;
-	if (0 < iSteps)
-	{
-		pBlock->AnimDropDown(iSteps);
-		aAnimDropDownBlocks.push_back(pBlock);
-	}
+
 	aBlocksField[pBlock->GetXPos()][pBlock->GetYPos()] = nullptr;
 	aBlocksField[iDistinationX][iDistinationY] = pBlock;
 	pBlock->SetXPos(iDistinationX);
 	pBlock->SetYPos(iDistinationY);
 }
 
-void ACMPlayingField::RelocateBlocks()
+void ACMPlayingField::RelocateBlocks(bool bWithAnimation)
 {
 	int32 iColumnsNum = 0;
 	// calculate columns number
@@ -103,20 +97,32 @@ void ACMPlayingField::RelocateBlocks()
 			const float fYOffset = iBlockIndexX * pGridActor->BlockSpacing - (iColumnsNum / 2.f * pGridActor->BlockSpacing);
 			const float fXOffset = iBlockIndexY * pGridActor->BlockSpacing - (pGridActor->SizeY / 2.f * pGridActor->BlockSpacing);
 			// Make postion vector, offset from Grid location
-			const FVector BlockLocation = FVector(fXOffset, fYOffset, 0.f) + pGridActor->GetActorLocation();
-			if (nullptr != aBlocksField[iBlockIndexX][iBlockIndexY])
+			const FVector vecBlockLocation = FVector(fXOffset, fYOffset, 0.f) + pGridActor->GetActorLocation();
+			ABreak2BricksBlock *pBlock = aBlocksField[iBlockIndexX][iBlockIndexY];
+			if (nullptr != pBlock)
 			{
-				check(aBlocksField[iBlockIndexX][iBlockIndexY]->GetXPos() == iBlockIndexX);
-				check(aBlocksField[iBlockIndexX][iBlockIndexY]->GetYPos() == iBlockIndexY);
-				aBlocksField[iBlockIndexX][iBlockIndexY]->SetActorLocation(BlockLocation);
+				check(pBlock->GetXPos() == iBlockIndexX);
+				check(pBlock->GetYPos() == iBlockIndexY);
+				if (bWithAnimation)
+				{
+					if (pBlock->GetActorLocation() != vecBlockLocation)
+					{
+						pBlock->AnimConnectColumns(vecBlockLocation);
+						aAnimConnectColumns.push_back(pBlock);
+					}
+				}
+				else
+				{
+					pBlock->SetActorLocation(vecBlockLocation);
+				}
 			}
 		}
 	}
 }
 
-void ACMPlayingField::CheckNoMoreMoves()
+bool ACMPlayingField::CheckNoMoreMoves()
 {
-	bNoMoreMoves = true;
+	bool bNoMoreMoves = true;
 	for (int32 iBlockIndexX = 0; iBlockIndexX < pGridActor->SizeX; ++iBlockIndexX)
 	{
 		for (int32 iBlockIndexY = 0; iBlockIndexY < pGridActor->SizeY; ++iBlockIndexY)
@@ -139,6 +145,7 @@ void ACMPlayingField::CheckNoMoreMoves()
 			break;
 		}
 	}
+	return bNoMoreMoves;
 }
 
 void ACMPlayingField::Clicked(ABreak2BricksBlock *pBlock, int iXPos, int iYPos)
@@ -173,13 +180,14 @@ void ACMPlayingField::Clicked(ABreak2BricksBlock *pBlock, int iXPos, int iYPos)
 					}
 					else if (iDownStep > 0)
 					{
-						MoveBlock(aBlocksField[iBlockIndexX][iBlockIndexY], iBlockIndexX, iBlockIndexY - iDownStep);
+						ABreak2BricksBlock *pBlock_ = aBlocksField[iBlockIndexX][iBlockIndexY];
+						MoveBlock(pBlock_, iBlockIndexX, iBlockIndexY - iDownStep);
+						pBlock_->AnimDropDown(iDownStep);
+						aAnimDropDownBlocks.push_back(pBlock_);
 					}
 				}
 			}
 		}
-		//RelocateBlocks();
-		CheckNoMoreMoves();
 	}
 }
 
@@ -277,17 +285,16 @@ FName ACMPlayingField::TickStateGame(int iTickType)
 {
 	if (ACMachine::TICK_StateStarted == iTickType)
 	{
+		if (CheckNoMoreMoves())
+		{
+			return GetStateStartName(); // ******************************* State Finished ********************************
+		}
 	}
 	else if (ACMachine::TICK_StateNormal == iTickType)
 	{
 		if (IsStateExternalSignal(EXTERNAL_SIGNAL_1))
 		{
 			return g_ssAnimDropDown; // ******************************* State Finished ********************************
-		}
-		if (bNoMoreMoves)
-		{
-			bNoMoreMoves = false;
-			return GetStateStartName(); // ******************************* State Finished ********************************
 		}
 	}
     return "";
@@ -306,6 +313,7 @@ FName ACMPlayingField::TickStateAnimDropDown(int iTickType)
 		if (aAnimDropDownBlocks.empty())
 		{
 			// connect columns
+			//RelocateBlocks(true);
 			int32 iLeftStep = 0;
 			for (int32 iBlockIndexX = 0; iBlockIndexX < pGridActor->SizeX; ++iBlockIndexX)
 			{
@@ -321,12 +329,13 @@ FName ACMPlayingField::TickStateAnimDropDown(int iTickType)
 						if (pBlock)
 						{
 							MoveBlock(pBlock, iBlockIndexX - iLeftStep, iBlockIndexY);
-							pBlock->AnimConnectColumns(iLeftStep);
-							aAnimConnectColumns.push_back(pBlock);
+							//pBlock->AnimConnectColumns(iLeftStep);
+							//aAnimConnectColumns.push_back(pBlock);
 						}
 					}
 				}
 			}
+			RelocateBlocks(true);
 			if (aAnimConnectColumns.size())
 			{
 				return g_ssConnectColumns; // ******************************* State Finished ********************************
@@ -352,6 +361,7 @@ FName ACMPlayingField::TickStateAnimConnectColumns(int iTickType)
 			[](const ABreak2BricksBlock* pBlockIter) { return !pBlockIter->bAnimConnectColumns; }), aAnimConnectColumns.end());
 		if (!aAnimConnectColumns.size())
 		{
+			RelocateBlocks();
 			return g_ssGame; // ******************************* State Finished ********************************
 		}
 	}

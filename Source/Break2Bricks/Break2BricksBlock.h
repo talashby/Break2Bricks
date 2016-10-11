@@ -58,7 +58,7 @@ public:
 	void AnimDropDown(int32 iSteps);
 
 	UFUNCTION(Category = "Animation", BlueprintImplementableEvent, BlueprintCallable)
-	void AnimConnectColumns(int32 iSteps);
+	void AnimConnectColumns(const FVector vecNewLocation);
 
 	void HandleClicked();
 

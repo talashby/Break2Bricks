@@ -27,10 +27,9 @@ private:
 	void CheckBlockForFindSameNearBlocks(tBlockSet &aBlocks, ABreak2BricksBlock *pBlock, ABreak2BricksBlock *pBlockNear);
 	void FindSameNearBlocks(tBlockSet &aBlocks, ABreak2BricksBlock *pBlock);
 	void MoveBlock(ABreak2BricksBlock *pBlock, int32 iDistinationX, int32 iDistinationY);
-	void RelocateBlocks();
-	void CheckNoMoreMoves();
+	void RelocateBlocks(bool bWithAnimation=false);
+	bool CheckNoMoreMoves();
 
-	bool bNoMoreMoves;
 	ABreak2BricksPawn *pOwnerActor;
 	class ABreak2BricksBlockGrid *pGridActor;
 

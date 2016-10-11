@@ -19,21 +19,23 @@ ABreak2BricksBlockGrid::ABreak2BricksBlockGrid()
 	ScoreText->SetRelativeRotation(FRotator(90.f,0.f,0.f));
 	ScoreText->SetText(FText::Format(LOCTEXT("ScoreFmt", "Score: {0}"), FText::AsNumber(0)));
 	ScoreText->SetupAttachment(DummyRoot);
-
-	static ConstructorHelpers::FObjectFinder<UBlueprint> ItemBlueprint1(TEXT("Blueprint'/Game/Blueprints/BP_Block1.BP_Block1'"));
+	
+	static ConstructorHelpers::FObjectFinder<UClass> ItemBlueprint1(TEXT("Blueprint'/Game/Blueprints/BP_Block1.BP_Block1_C'"));
 	if (ItemBlueprint1.Object)
 	{
-		aABPBlocks.push_back((UClass*)ItemBlueprint1.Object->GeneratedClass);
+		aABPBlocks.push_back(ItemBlueprint1.Object);
 	}
-	static ConstructorHelpers::FObjectFinder<UBlueprint> ItemBlueprint2(TEXT("Blueprint'/Game/Blueprints/BP_Block2.BP_Block2'"));
+
+	static ConstructorHelpers::FObjectFinder<UClass> ItemBlueprint2(TEXT("Blueprint'/Game/Blueprints/BP_Block2.BP_Block2_C'"));
 	if (ItemBlueprint2.Object)
 	{
-		aABPBlocks.push_back((UClass*)ItemBlueprint2.Object->GeneratedClass);
+		aABPBlocks.push_back(ItemBlueprint2.Object);
 	}
-	static ConstructorHelpers::FObjectFinder<UBlueprint> ItemBlueprint3(TEXT("Blueprint'/Game/Blueprints/BP_Block3.BP_Block3'"));
+
+	static ConstructorHelpers::FObjectFinder<UClass> ItemBlueprint3(TEXT("Blueprint'/Game/Blueprints/BP_Block3.BP_Block3_C'"));
 	if (ItemBlueprint3.Object)
 	{
-		aABPBlocks.push_back((UClass*)ItemBlueprint3.Object->GeneratedClass);
+		aABPBlocks.push_back(ItemBlueprint3.Object);
 	}
 	// Set defaults
 	SizeX = 3;
