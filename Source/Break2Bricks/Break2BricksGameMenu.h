@@ -2,32 +2,23 @@
 
 #pragma once
 
-#include "GameFramework/Actor.h"
+#include "Blueprint/UserWidget.h"
 #include "Break2BricksGameMenu.generated.h"
 
-UCLASS(minimalapi)
-class ABreak2BricksGameMenu : public AActor
+/**
+ * 
+ */
+UCLASS()
+class BREAK2BRICKS_API UBreak2BricksGameMenu : public UUserWidget
 {
 	GENERATED_BODY()
 	
-	/** Dummy root component */
-	UPROPERTY(Category = GameMenu, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	class USceneComponent* pDummyRoot;
-
-	/** Text component for the score */
-	UPROPERTY(Category = GameMenu, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	class UTextRenderComponent* pManaText;
-
-public:	
-	// Sets default values for this actor's properties
-	ABreak2BricksGameMenu();
-
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+public:
 	
-	// Called every frame
-	virtual void Tick( float DeltaSeconds ) override;
+	UBreak2BricksGameMenu();
 
-	
+	/** Is drop down animation played */
+	UPROPERTY(Category = GameMenu, VisibleDefaultsOnly, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	bool bPlayStandardGamePressed;
 	
 };

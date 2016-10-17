@@ -28,5 +28,5 @@ protected:
 
 private:
 
-    SP_ACMGeneral m_spACMGeneral;
+    SP_ACMGeneral spACMGeneral;
 };

@@ -200,8 +200,8 @@ FName ACMPlayingField::TickStateStart(int iTickType)
     if (ACMachine::TICK_StateStarted == iTickType)
     {
 		// Spawn a block
-		TSubclassOf<ABreak2BricksPawn> ClassToFind;
-		TArray<AActor*> FoundActors;
+		//TSubclassOf<ABreak2BricksPawn> ClassToFind;
+		//TArray<AActor*> FoundActors;
 		//UGameplayStatics::GetAllActorsOfClass(pOwnerActor->GetWorld(), ClassToFind, FoundActors);
 		//int ttt = FoundActors.Num();
 		//check(FoundActors.Num() != 1);

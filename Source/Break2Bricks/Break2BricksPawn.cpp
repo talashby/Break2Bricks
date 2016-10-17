@@ -12,8 +12,6 @@ ABreak2BricksPawn::ABreak2BricksPawn(const FObjectInitializer& ObjectInitializer
 	: Super(ObjectInitializer)
 {
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
-
-    m_spACMGeneral = SP_ACMGeneral(new ACMGeneral(this));
 }
 
 void ABreak2BricksPawn::Tick(float DeltaSeconds)
@@ -40,7 +38,11 @@ void ABreak2BricksPawn::Tick(float DeltaSeconds)
 		}
 	}
 
-    m_spACMGeneral->TickPublic();
+	if (nullptr == spACMGeneral.Get())
+	{
+		spACMGeneral = SP_ACMGeneral(new ACMGeneral(this));
+	}
+    spACMGeneral->TickPublic();
     //GetWorld()->GetFirstPlayerController()->ClientMessage("TEST log Message");
 }
 

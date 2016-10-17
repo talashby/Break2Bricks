@@ -5,6 +5,7 @@
 
 
 #include "EngineMinimal.h"
+#include "SlateBasics.h"
 
 //General Log
 DECLARE_LOG_CATEGORY_EXTERN(LogGeneral, Log, All);

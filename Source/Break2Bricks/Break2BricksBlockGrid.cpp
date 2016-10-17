@@ -37,6 +37,12 @@ ABreak2BricksBlockGrid::ABreak2BricksBlockGrid()
 	{
 		aABPBlocks.push_back(ItemBlueprint3.Object);
 	}
+
+	static ConstructorHelpers::FObjectFinder<UClass> ItemBlueprint4(TEXT("WidgetBlueprint'/Game/Blueprints/BP_GameMenu.BP_GameMenu_C'"));
+	if (ItemBlueprint4.Object)
+	{
+		pGameMenu = ItemBlueprint4.Object;
+	}
 	// Set defaults
 	SizeX = 3;
 	SizeY = 3;
