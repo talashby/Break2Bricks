@@ -4,6 +4,7 @@
 #include "Break2BricksBlockGrid.h"
 #include "Break2BricksBlock.h"
 #include "Components/TextRenderComponent.h"
+#include "Break2BricksGameMenu.h"
 
 #define LOCTEXT_NAMESPACE "PuzzleBlockGrid"
 
@@ -38,10 +39,12 @@ ABreak2BricksBlockGrid::ABreak2BricksBlockGrid()
 		aABPBlocks.push_back(ItemBlueprint3.Object);
 	}
 
+	pGameMenu = nullptr;
+	pGameMenuClass = nullptr;
 	static ConstructorHelpers::FObjectFinder<UClass> ItemBlueprint4(TEXT("WidgetBlueprint'/Game/Blueprints/BP_GameMenu.BP_GameMenu_C'"));
 	if (ItemBlueprint4.Object)
 	{
-		pGameMenu = ItemBlueprint4.Object;
+		pGameMenuClass = ItemBlueprint4.Object;
 	}
 	// Set defaults
 	SizeX = 3;
@@ -53,7 +56,10 @@ ABreak2BricksBlockGrid::ABreak2BricksBlockGrid()
 void ABreak2BricksBlockGrid::BeginPlay()
 {
 	Super::BeginPlay();
-
+	if (pGameMenuClass)
+	{
+		pGameMenu = CreateWidget<UBreak2BricksGameMenu>(GetWorld(), pGameMenuClass);
+	}
 	// Number of blocks
 	/*const int32 NumBlocks = Size * Size;
 

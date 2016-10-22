@@ -11,6 +11,7 @@
 static const FName g_ssGame("Game");
 static const FName g_ssAnimDropDown("AnimDropDown");
 static const FName g_ssConnectColumns("AnimConnectColumns");
+static const FName g_ssNoMoreMoves("NoMoreMoves");
 
 ACMPlayingField::ACMPlayingField(ABreak2BricksPawn *owner) : ACMachine("ACMPlayingField")
 {
@@ -19,11 +20,26 @@ ACMPlayingField::ACMPlayingField(ABreak2BricksPawn *owner) : ACMachine("ACMPlayi
     REGISTER_ACSTATE(ACMPlayingField, Game);
 	REGISTER_ACSTATE(ACMPlayingField, AnimDropDown);
 	REGISTER_ACSTATE(ACMPlayingField, AnimConnectColumns);
+	REGISTER_ACSTATE(ACMPlayingField, NoMoreMoves);
 }
 
 
 ACMPlayingField::~ACMPlayingField()
 {
+	if (0 < aBlocksField.size())
+	{
+		for (int32 iBlockIndexX = 0; iBlockIndexX < pGridActor->SizeX; ++iBlockIndexX)
+		{
+			for (int32 iBlockIndexY = 0; iBlockIndexY < pGridActor->SizeY; ++iBlockIndexY)
+			{
+				ABreak2BricksBlock *pBlock = aBlocksField[iBlockIndexX][iBlockIndexY];
+				if (nullptr != pBlock)
+				{
+					pBlock->Destroy();
+				}
+			}
+		}
+	}
 }
 
 void ACMPlayingField::CheckBlockForFindSameNearBlocks(tBlockSet &aBlocks, ABreak2BricksBlock *pBlock, ABreak2BricksBlock *pBlockNear)
@@ -191,6 +207,11 @@ void ACMPlayingField::Clicked(ABreak2BricksBlock *pBlock, int iXPos, int iYPos)
 	}
 }
 
+bool ACMPlayingField::IsGameFinished() const
+{
+	return IsCurrentState(g_ssNoMoreMoves);
+}
+
 void ACMPlayingField::Tick()
 {
 }
@@ -218,21 +239,8 @@ FName ACMPlayingField::TickStateStart(int iTickType)
 
 		//ABreak2BricksBlockGrid* NewBlock = pOwnerActor->GetWorld()->SpawnActor<ABreak2BricksBlockGrid>();
 
-		if (0 < aBlocksField.size()) // restart case
-		{
-			for (int32 iBlockIndexX = 0; iBlockIndexX < pGridActor->SizeX; ++iBlockIndexX)
-			{
-				for (int32 iBlockIndexY = 0; iBlockIndexY < pGridActor->SizeY; ++iBlockIndexY)
-				{
-					ABreak2BricksBlock *pBlock = aBlocksField[iBlockIndexX][iBlockIndexY];
-					if (nullptr != pBlock)
-					{
-						pBlock->Destroy();
-					}
-				}
-			}
-		}
-		aBlocksField.clear();
+		verify(0 == aBlocksField.size()); // never restart
+
 
         // Loop to spawn each block
 		for (int32 iBlockIndexX = 0; iBlockIndexX < pGridActor->SizeX; ++iBlockIndexX)
@@ -287,7 +295,7 @@ FName ACMPlayingField::TickStateGame(int iTickType)
 	{
 		if (CheckNoMoreMoves())
 		{
-			return GetStateStartName(); // ******************************* State Finished ********************************
+			return g_ssNoMoreMoves; // ******************************* State Finished ********************************
 		}
 	}
 	else if (ACMachine::TICK_StateNormal == iTickType)
@@ -365,5 +373,10 @@ FName ACMPlayingField::TickStateAnimConnectColumns(int iTickType)
 			return g_ssGame; // ******************************* State Finished ********************************
 		}
 	}
+	return "";
+}
+
+FName ACMPlayingField::TickStateNoMoreMoves(int iTickType)
+{
 	return "";
 }

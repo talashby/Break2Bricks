@@ -17,8 +17,21 @@ public:
 	
 	UBreak2BricksGameMenu();
 
-	/** Is drop down animation played */
+	void Init();
+
+	/** Is Play button pressed */
 	UPROPERTY(Category = GameMenu, VisibleDefaultsOnly, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	bool bPlayStandardGamePressed;
 	
+	UPROPERTY(Category = GameMenu, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	FText sCurrentMana;
+
+	UPROPERTY(Category = GameMenu, VisibleDefaultsOnly, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	bool bDebugNextDayButtonPressed;
+
+	int32 GetMana() const { return iMana; }
+	void AddMana(int32 iManaAdd);
+
+private:
+	int32 iMana;
 };

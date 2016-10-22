@@ -45,11 +45,15 @@ FName ACMGeneral::TickStateStart(int iTickType)
 		}
 		if (nullptr == pGameMenu)
 		{
-			pGameMenu = CreateWidget<UBreak2BricksGameMenu>(pOwnerActor->GetWorld(), pGridActor->pGameMenu);
+			pGameMenu = pGridActor->pGameMenu;
 			if (nullptr == pGameMenu)
 			{
 				return ErrorState("UBreak2BricksGameMenu not found"); // ******************************* State Finished ********************************
 			}
+		}
+		else
+		{
+			pGameMenu->Init();
 		}
 		
         return g_ssGameMenu; // ******************************* State Finished ********************************
@@ -63,7 +67,6 @@ FName ACMGeneral::TickStateGameMenu(int iTickType)
 	{
 		if (pGameMenu)
 		{
-			pGameMenu->bPlayStandardGamePressed = false;
 			pGameMenu->AddToViewport();
 		}
 		else
@@ -88,7 +91,17 @@ FName ACMGeneral::TickStateGameMenu(int iTickType)
 	{
 		if (true == pGameMenu->bPlayStandardGamePressed)
 		{
-			return g_ssGame;
+			pGameMenu->bPlayStandardGamePressed = false;
+			if (pGameMenu->GetMana() >= 10)
+			{
+				pGameMenu->AddMana(-10);
+				return g_ssGame;
+			}
+		}
+		if (true == pGameMenu->bDebugNextDayButtonPressed)
+		{
+			pGameMenu->bDebugNextDayButtonPressed = false;
+			pGameMenu->AddMana(100);
 		}
 	}
 	return "";
@@ -104,6 +117,11 @@ FName ACMGeneral::TickStateGame(int iTickType)
     else if (ACMachine::TICK_StateNormal == iTickType)
     {
         spACMPlayingField->TickPublic();
+		if (spACMPlayingField->IsGameFinished())
+		{
+			spACMPlayingField.Reset();
+			return GetStateStartName(); // ******************************* State Finished ********************************
+		}
     }
     return "";
 }

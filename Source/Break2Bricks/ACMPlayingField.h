@@ -14,6 +14,7 @@ public:
     virtual ~ACMPlayingField();
 
 	void Clicked(ABreak2BricksBlock *pBlock, int iXPos, int iYPos);
+	bool IsGameFinished() const;
 
 protected:
 
@@ -22,6 +23,7 @@ protected:
     FName TickStateGame(int iTickType);
 	FName TickStateAnimDropDown(int iTickType);
 	FName TickStateAnimConnectColumns(int iTickType);
+	FName TickStateNoMoreMoves(int iTickType);
 
 private:
 	void CheckBlockForFindSameNearBlocks(tBlockSet &aBlocks, ABreak2BricksBlock *pBlock, ABreak2BricksBlock *pBlockNear);
