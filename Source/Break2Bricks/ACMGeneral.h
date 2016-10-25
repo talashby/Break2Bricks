@@ -6,7 +6,7 @@
 /**
  * 
  */
-class ACMPlayingField; typedef TSharedPtr<ACMPlayingField> SP_ACMPlayingField;
+class ACMGameMenu; typedef TSharedPtr<ACMGameMenu> SP_ACMGameMenu;
 class ABreak2BricksPawn;
 
 class ACMGeneral : public ACMachine
@@ -15,19 +15,14 @@ public:
 	ACMGeneral(ABreak2BricksPawn *owner);
 	virtual ~ACMGeneral();
 
-	void StartMenuStartGameButtonClicked();
-
 protected:
     virtual FName TickStateStart(int iTickType);
 	FName TickStateGameMenu(int iTickType);
-    FName TickStateGame(int iTickType);
 
 private:
-    SP_ACMPlayingField spACMPlayingField;
+    SP_ACMGameMenu spACMGameMenu;
 	ABreak2BricksPawn *pOwnerActor;
-	class ABreak2BricksBlockGrid *pGridActor;
-	class UBreak2BricksGameMenu* pGameMenu;
-	//class ABreak2BricksGameMenu *pGameMenuActor;
+	//class ABreak2BricksBlockGrid *pGridActor;
 };
 
 class ACMGeneral; typedef TSharedPtr<ACMGeneral> SP_ACMGeneral;
