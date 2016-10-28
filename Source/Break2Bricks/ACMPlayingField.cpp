@@ -6,6 +6,7 @@
 #include "Break2BricksBlock.h"
 #include "Break2BricksPawn.h"
 #include "EngineUtils.h"
+#include "Break2BricksLevelMenu.h"
 #include <algorithm>
 
 static const FName g_ssGame("Game");
@@ -110,7 +111,7 @@ void ACMPlayingField::RelocateBlocks(bool bWithAnimation)
 	{
 		for (int32 iBlockIndexY = 0; iBlockIndexY < pGridActor->SizeY; ++iBlockIndexY)
 		{
-			const float fYOffset = iBlockIndexX * pGridActor->BlockSpacing - (iColumnsNum / 2.f * pGridActor->BlockSpacing);
+			const float fYOffset = iBlockIndexX * pGridActor->BlockSpacing - ((iColumnsNum-1) / 2.f * pGridActor->BlockSpacing);
 			const float fXOffset = iBlockIndexY * pGridActor->BlockSpacing - (pGridActor->SizeY / 2.f * pGridActor->BlockSpacing);
 			// Make postion vector, offset from Grid location
 			const FVector vecBlockLocation = FVector(fXOffset, fYOffset, 0.f) + pGridActor->GetActorLocation();
@@ -138,6 +139,11 @@ void ACMPlayingField::RelocateBlocks(bool bWithAnimation)
 
 bool ACMPlayingField::CheckNoMoreMoves()
 {
+	if (0 < pLevelMenu->GetBombNum())
+	{
+		return false;
+	}
+
 	bool bNoMoreMoves = true;
 	for (int32 iBlockIndexX = 0; iBlockIndexX < pGridActor->SizeX; ++iBlockIndexX)
 	{
@@ -164,26 +170,44 @@ bool ACMPlayingField::CheckNoMoreMoves()
 	return bNoMoreMoves;
 }
 
-void ACMPlayingField::Clicked(ABreak2BricksBlock *pBlock, int iXPos, int iYPos)
+void ACMPlayingField::Clicked(ABreak2BricksBlock *pBlock)
 {
 	if (IsCurrentState(g_ssGame))
 	{
-		tBlockSet aBlocks;
-		aBlocks.insert(pBlock);
-		FindSameNearBlocks(aBlocks, pBlock);
-		if (aBlocks.size() > 1)
+		if (pLevelMenu->bBombCheckbox)
 		{
 			SetStateExternalSignal(EXTERNAL_SIGNAL_1);
-			for (ABreak2BricksBlock *pBlockIter : aBlocks)
+			int32 iXPos = pBlock->GetXPos();
+			int32 iYPos = pBlock->GetYPos();
+			check(pBlock == aBlocksField[iXPos][iYPos]);
+			aBlocksField[iXPos][iYPos] = nullptr;
+			bool bDestroyed = pBlock->Destroy();
+			check(bDestroyed);
+			pLevelMenu->bBombCheckbox = false;
+			pLevelMenu->DecBomb();
+		}
+		else
+		{
+			tBlockSet aBlocks;
+			aBlocks.insert(pBlock);
+			FindSameNearBlocks(aBlocks, pBlock);
+			if (aBlocks.size() > 1)
 			{
-				int32 iXPosIter = pBlockIter->GetXPos();
-				int32 iYPosIter = pBlockIter->GetYPos();
-				check(pBlockIter == aBlocksField[iXPosIter][iYPosIter]);
-				aBlocksField[iXPosIter][iYPosIter] = nullptr;
-				bool bDestroyed = pBlockIter->Destroy();
-				check(bDestroyed);
+				SetStateExternalSignal(EXTERNAL_SIGNAL_1);
+				for (ABreak2BricksBlock *pBlockIter : aBlocks)
+				{
+					int32 iXPosIter = pBlockIter->GetXPos();
+					int32 iYPosIter = pBlockIter->GetYPos();
+					check(pBlockIter == aBlocksField[iXPosIter][iYPosIter]);
+					aBlocksField[iXPosIter][iYPosIter] = nullptr;
+					bool bDestroyed = pBlockIter->Destroy();
+					check(bDestroyed);
+				}
 			}
+		}
 
+		if (IsStateExternalSignal(EXTERNAL_SIGNAL_1))
+		{
 			// gravitation up to down
 			for (int32 iBlockIndexX = 0; iBlockIndexX < pGridActor->SizeX; ++iBlockIndexX)
 			{
@@ -235,6 +259,24 @@ FName ACMPlayingField::TickStateStart(int iTickType)
 		else
 		{
 			return ErrorState("ABreak2BricksBlockGrid not found"); // ******************************* State Finished ********************************
+		}
+
+		// pLevelMenu
+		{
+			pLevelMenu = pGridActor->pLevelMenu;
+			if (nullptr == pLevelMenu)
+			{
+				return ErrorState("UBreak2BricksLevelMenu not found"); // ******************************* State Finished ********************************
+			}
+			pLevelMenu->Init();
+
+			pLevelMenu->AddToViewport();
+			/*if (APlayerController* pPC = Cast<APlayerController>(pOwnerActor->GetController()))
+			{
+			FInputModeGameAndUI Mode;
+			Mode.SetWidgetToFocus(pLevelMenu->TakeWidget());
+			pPC->SetInputMode(Mode);
+			}*/
 		}
 
 		//ABreak2BricksBlockGrid* NewBlock = pOwnerActor->GetWorld()->SpawnActor<ABreak2BricksBlockGrid>();
@@ -378,5 +420,6 @@ FName ACMPlayingField::TickStateAnimConnectColumns(int iTickType)
 
 FName ACMPlayingField::TickStateNoMoreMoves(int iTickType)
 {
+	pLevelMenu->RemoveFromViewport();
 	return "";
 }

@@ -82,7 +82,7 @@ void ABreak2BricksBlock::OnFingerPressedBlock(ETouchIndex::Type FingerIndex, UPr
 
 void ABreak2BricksBlock::HandleClicked()
 {
-	pOwnerACM->Clicked(this, iXPos, iYPos);
+	pOwnerACM->Clicked(this);
 	// Change material
 	/*BlockMesh->SetMaterial(0, OrangeMaterial);
 

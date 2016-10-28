@@ -5,6 +5,7 @@
 #include "Break2BricksBlock.h"
 #include "Components/TextRenderComponent.h"
 #include "Break2BricksGameMenu.h"
+#include "Break2BricksLevelMenu.h"
 
 #define LOCTEXT_NAMESPACE "PuzzleBlockGrid"
 
@@ -39,13 +40,26 @@ ABreak2BricksBlockGrid::ABreak2BricksBlockGrid()
 		aABPBlocks.push_back(ItemBlueprint3.Object);
 	}
 
-	pGameMenu = nullptr;
-	pGameMenuClass = nullptr;
-	static ConstructorHelpers::FObjectFinder<UClass> ItemBlueprint4(TEXT("WidgetBlueprint'/Game/Blueprints/BP_GameMenu.BP_GameMenu_C'"));
-	if (ItemBlueprint4.Object)
 	{
-		pGameMenuClass = ItemBlueprint4.Object;
+		pGameMenu = nullptr;
+		pGameMenuClass = nullptr;
+		static ConstructorHelpers::FObjectFinder<UClass> ItemBlueprint(TEXT("WidgetBlueprint'/Game/Blueprints/BP_GameMenu.BP_GameMenu_C'"));
+		if (ItemBlueprint.Object)
+		{
+			pGameMenuClass = ItemBlueprint.Object;
+		}
 	}
+
+	{
+		pLevelMenu = nullptr;
+		pLevelMenuClass = nullptr;
+		static ConstructorHelpers::FObjectFinder<UClass> ItemBlueprint(TEXT("WidgetBlueprint'/Game/Blueprints/BP_LevelMenu.BP_LevelMenu_C'"));
+		if (ItemBlueprint.Object)
+		{
+			pLevelMenuClass = ItemBlueprint.Object;
+		}
+	}
+
 	// Set defaults
 	SizeX = 3;
 	SizeY = 3;
@@ -59,6 +73,10 @@ void ABreak2BricksBlockGrid::BeginPlay()
 	if (pGameMenuClass)
 	{
 		pGameMenu = CreateWidget<UBreak2BricksGameMenu>(GetWorld(), pGameMenuClass);
+	}
+	if (pLevelMenuClass)
+	{
+		pLevelMenu = CreateWidget<UBreak2BricksLevelMenu>(GetWorld(), pLevelMenuClass);
 	}
 	// Number of blocks
 	/*const int32 NumBlocks = Size * Size;

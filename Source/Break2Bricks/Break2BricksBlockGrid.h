@@ -43,9 +43,14 @@ public:
 	void AddScore();
 
 	std::vector< TSubclassOf<class ABreak2BricksBlock> > aABPBlocks; // blueprint classes
+
 	UPROPERTY()
 	class UBreak2BricksGameMenu *pGameMenu;
 	TSubclassOf<class UBreak2BricksGameMenu> pGameMenuClass; // blueprint class
+
+	UPROPERTY()
+	class UBreak2BricksLevelMenu *pLevelMenu;
+	TSubclassOf<class UBreak2BricksLevelMenu> pLevelMenuClass; // blueprint class
 
 public:
 	/** Returns DummyRoot subobject **/

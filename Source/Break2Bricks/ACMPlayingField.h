@@ -13,7 +13,7 @@ public:
     ACMPlayingField(ABreak2BricksPawn *owner);
     virtual ~ACMPlayingField();
 
-	void Clicked(ABreak2BricksBlock *pBlock, int iXPos, int iYPos);
+	void Clicked(ABreak2BricksBlock *pBlock);
 	bool IsGameFinished() const;
 
 protected:
@@ -34,6 +34,7 @@ private:
 
 	ABreak2BricksPawn *pOwnerActor;
 	class ABreak2BricksBlockGrid *pGridActor;
+	class UBreak2BricksLevelMenu* pLevelMenu;
 
 	std::vector< tBlockVector > aBlocksField;
 	tBlockVector aAnimDropDownBlocks;
