@@ -18,6 +18,9 @@ public:
 
 	virtual void CalcCamera(float DeltaTime, struct FMinimalViewInfo& OutResult) override;
 
+	void ResetAnyClick();
+	bool IsAnyClick() const;
+
 protected:
 	void OnResetVR();
 	void TriggerClick();

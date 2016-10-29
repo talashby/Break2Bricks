@@ -16,11 +16,12 @@ ABreak2BricksBlockGrid::ABreak2BricksBlockGrid()
 	RootComponent = DummyRoot;
 
 	// Create static mesh component
-	ScoreText = CreateDefaultSubobject<UTextRenderComponent>(TEXT("ScoreText0"));
-	ScoreText->SetRelativeLocation(FVector(200.f,0.f,0.f));
-	ScoreText->SetRelativeRotation(FRotator(90.f,0.f,0.f));
-	ScoreText->SetText(FText::Format(LOCTEXT("ScoreFmt", "Score: {0}"), FText::AsNumber(0)));
-	ScoreText->SetupAttachment(DummyRoot);
+	pNoMoreMovesText = CreateDefaultSubobject<UTextRenderComponent>(TEXT("ScoreText0"));
+	pNoMoreMovesText->SetRelativeLocation(FVector(200.f,0.f,0.f));
+	pNoMoreMovesText->SetRelativeRotation(FRotator(90.f,0.f,0.f));
+	pNoMoreMovesText->SetText(FText::Format(LOCTEXT("ScoreFmt", "Score: {0}"), FText::AsNumber(0)));
+	pNoMoreMovesText->SetupAttachment(DummyRoot);
+	pNoMoreMovesText->SetVisibility(false);
 	
 	static ConstructorHelpers::FObjectFinder<UClass> ItemBlueprint1(TEXT("Blueprint'/Game/Blueprints/BP_Block1.BP_Block1_C'"));
 	if (ItemBlueprint1.Object)
@@ -102,13 +103,19 @@ void ABreak2BricksBlockGrid::BeginPlay()
 }
 
 
+USceneComponent* ABreak2BricksBlockGrid::GetNoMoreMovesText() const
+{
+	return pNoMoreMovesText;
+}
+
+/*
 void ABreak2BricksBlockGrid::AddScore()
 {
 	// Increment score
 	Score++;
 
 	// Update text
-	ScoreText->SetText(FText::Format(LOCTEXT("ScoreFmt", "Score: {0}"), FText::AsNumber(Score)));
-}
+	pNoMoreMovesText->SetText(FText::Format(LOCTEXT("ScoreFmt", "Score: {0}"), FText::AsNumber(Score)));
+}*/
 
 #undef LOCTEXT_NAMESPACE

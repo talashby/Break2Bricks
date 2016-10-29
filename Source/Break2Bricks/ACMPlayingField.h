@@ -24,6 +24,7 @@ protected:
 	FName TickStateAnimDropDown(int iTickType);
 	FName TickStateAnimConnectColumns(int iTickType);
 	FName TickStateNoMoreMoves(int iTickType);
+	FName TickStateGameFinished(int iTickType);
 
 private:
 	void CheckBlockForFindSameNearBlocks(tBlockSet &aBlocks, ABreak2BricksBlock *pBlock, ABreak2BricksBlock *pBlockNear);

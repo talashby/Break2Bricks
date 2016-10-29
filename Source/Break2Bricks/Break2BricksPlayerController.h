@@ -11,6 +11,10 @@ class ABreak2BricksPlayerController : public APlayerController
 
 public:
 	ABreak2BricksPlayerController();
+
+	virtual bool InputKey(FKey Key, EInputEvent EventType, float AmountDepressed, bool bGamepad) override;
+
+	bool bAnyClick;
 };
 
 

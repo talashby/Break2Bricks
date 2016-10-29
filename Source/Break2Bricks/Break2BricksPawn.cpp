@@ -3,6 +3,7 @@
 #include "Break2Bricks.h"
 #include "Break2BricksPawn.h"
 #include "Break2BricksBlock.h"
+#include "Break2BricksPlayerController.h"
 #include "Kismet/HeadMountedDisplayFunctionLibrary.h"
 #include "DrawDebugHelpers.h"
 
@@ -59,6 +60,23 @@ void ABreak2BricksPawn::CalcCamera(float DeltaTime, struct FMinimalViewInfo& Out
 	Super::CalcCamera(DeltaTime, OutResult);
 
 	OutResult.Rotation = FRotator(-90.0f, -90.0f, 0.0f);
+}
+
+void ABreak2BricksPawn::ResetAnyClick()
+{
+	if (ABreak2BricksPlayerController* pPC = Cast<ABreak2BricksPlayerController>(GetController()))
+	{
+		pPC->bAnyClick = false;
+	}
+}
+
+bool ABreak2BricksPawn::IsAnyClick() const
+{
+	if (ABreak2BricksPlayerController* pPC = Cast<ABreak2BricksPlayerController>(GetController()))
+	{
+		return pPC->bAnyClick;
+	}
+	return false;
 }
 
 void ABreak2BricksPawn::OnResetVR()

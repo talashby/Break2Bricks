@@ -13,6 +13,7 @@ static const FName g_ssGame("Game");
 static const FName g_ssAnimDropDown("AnimDropDown");
 static const FName g_ssConnectColumns("AnimConnectColumns");
 static const FName g_ssNoMoreMoves("NoMoreMoves");
+static const FName g_ssGameFinished("GameFinished");
 
 ACMPlayingField::ACMPlayingField(ABreak2BricksPawn *owner) : ACMachine("ACMPlayingField")
 {
@@ -22,6 +23,7 @@ ACMPlayingField::ACMPlayingField(ABreak2BricksPawn *owner) : ACMachine("ACMPlayi
 	REGISTER_ACSTATE(ACMPlayingField, AnimDropDown);
 	REGISTER_ACSTATE(ACMPlayingField, AnimConnectColumns);
 	REGISTER_ACSTATE(ACMPlayingField, NoMoreMoves);
+	REGISTER_ACSTATE(ACMPlayingField, GameFinished);
 }
 
 
@@ -233,7 +235,7 @@ void ACMPlayingField::Clicked(ABreak2BricksBlock *pBlock)
 
 bool ACMPlayingField::IsGameFinished() const
 {
-	return IsCurrentState(g_ssNoMoreMoves);
+	return IsCurrentState(g_ssGameFinished);
 }
 
 void ACMPlayingField::Tick()
@@ -420,6 +422,24 @@ FName ACMPlayingField::TickStateAnimConnectColumns(int iTickType)
 
 FName ACMPlayingField::TickStateNoMoreMoves(int iTickType)
 {
-	pLevelMenu->RemoveFromViewport();
+	if (ACMachine::TICK_StateStarted == iTickType)
+	{
+		pOwnerActor->ResetAnyClick();
+		pGridActor->GetNoMoreMovesText()->SetVisibility(true);
+		pLevelMenu->RemoveFromViewport();
+	}
+	else if (ACMachine::TICK_StateNormal == iTickType)
+	{
+		if (pOwnerActor->IsAnyClick())
+		{
+			pGridActor->GetNoMoreMovesText()->SetVisibility(false);
+			return g_ssGameFinished;
+		}
+	}
+	return "";
+}
+
+FName ACMPlayingField::TickStateGameFinished(int iTickType)
+{
 	return "";
 }

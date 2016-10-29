@@ -10,3 +10,12 @@ ABreak2BricksPlayerController::ABreak2BricksPlayerController()
 	bEnableTouchEvents = true;
 	DefaultMouseCursor = EMouseCursor::Default;
 }
+
+bool ABreak2BricksPlayerController::InputKey(FKey Key, EInputEvent EventType, float AmountDepressed, bool bGamepad)
+{
+	if ("LeftMouseButton" == Key.GetFName() && EInputEvent::IE_Pressed == EventType)
+	{
+		bAnyClick = true;
+	}
+	return Super::InputKey(Key, EventType, AmountDepressed, bGamepad);
+}

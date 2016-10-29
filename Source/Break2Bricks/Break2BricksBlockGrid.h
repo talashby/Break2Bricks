@@ -14,15 +14,12 @@ class ABreak2BricksBlockGrid : public AActor
 	UPROPERTY(Category = Grid, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class USceneComponent* DummyRoot;
 
-	/** Text component for the score */
+	/** Text component */
 	UPROPERTY(Category = Grid, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	class UTextRenderComponent* ScoreText;
+	class UTextRenderComponent* pNoMoreMovesText;
 
 public:
 	ABreak2BricksBlockGrid();
-
-	/** How many blocks have been clicked */
-	int32 Score;
 
 	/** Number of blocks along each side of grid */
 	UPROPERTY(Category = Grid, EditAnywhere, BlueprintReadOnly)
@@ -39,9 +36,6 @@ public:
 	virtual void BeginPlay() override;
 	// End AActor interface
 
-	/** Handle the block being clicked */
-	void AddScore();
-
 	std::vector< TSubclassOf<class ABreak2BricksBlock> > aABPBlocks; // blueprint classes
 
 	UPROPERTY()
@@ -55,8 +49,8 @@ public:
 public:
 	/** Returns DummyRoot subobject **/
 	FORCEINLINE class USceneComponent* GetDummyRoot() const { return DummyRoot; }
-	/** Returns ScoreText subobject **/
-	FORCEINLINE class UTextRenderComponent* GetScoreText() const { return ScoreText; }
+	/** Returns NoMoreMovesText subobject **/
+	USceneComponent* GetNoMoreMovesText() const;
 };
 
 
