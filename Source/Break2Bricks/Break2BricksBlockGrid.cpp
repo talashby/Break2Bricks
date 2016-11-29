@@ -16,13 +16,20 @@ ABreak2BricksBlockGrid::ABreak2BricksBlockGrid()
 	RootComponent = DummyRoot;
 
 	// Create static mesh component
-	pNoMoreMovesText = CreateDefaultSubobject<UTextRenderComponent>(TEXT("ScoreText0"));
-	pNoMoreMovesText->SetRelativeLocation(FVector(200.f,0.f,0.f));
-	pNoMoreMovesText->SetRelativeRotation(FRotator(90.f,0.f,0.f));
-	pNoMoreMovesText->SetText(FText::Format(LOCTEXT("ScoreFmt", "Score: {0}"), FText::AsNumber(0)));
+	pNoMoreMovesText = CreateDefaultSubobject<UTextRenderComponent>(TEXT("NoMoreMovesText"));
+	//pNoMoreMovesText->SetRelativeLocation(FVector(200.f,0.f,0.f));
+	//pNoMoreMovesText->SetRelativeRotation(FRotator(90.f,0.f,0.f));
+	//pNoMoreMovesText->SetText(FText::Format(LOCTEXT("ScoreFmt", "Score: {0}"), FText::AsNumber(0)));
 	pNoMoreMovesText->SetupAttachment(DummyRoot);
-	pNoMoreMovesText->SetVisibility(false);
+	//pNoMoreMovesText->SetVisibility(false);
 	
+	// Create static mesh component
+	pLevelCompleteText = CreateDefaultSubobject<UTextRenderComponent>(TEXT("LevelCompleteText"));
+	//pLevelCompleteText->SetRelativeLocation(FVector(200.f, 0.f, 0.f));
+	//pLevelCompleteText->SetRelativeRotation(FRotator(90.f, 0.f, 0.f));
+	pLevelCompleteText->SetupAttachment(DummyRoot);
+	//pLevelCompleteText->SetVisibility(false);
+
 	static ConstructorHelpers::FObjectFinder<UClass> ItemBlueprint1(TEXT("Blueprint'/Game/Blueprints/BP_Block1.BP_Block1_C'"));
 	if (ItemBlueprint1.Object)
 	{
@@ -108,6 +115,10 @@ USceneComponent* ABreak2BricksBlockGrid::GetNoMoreMovesText() const
 	return pNoMoreMovesText;
 }
 
+USceneComponent* ABreak2BricksBlockGrid::GetLevelCompleteText() const
+{
+	return pLevelCompleteText;
+}
 /*
 void ABreak2BricksBlockGrid::AddScore()
 {

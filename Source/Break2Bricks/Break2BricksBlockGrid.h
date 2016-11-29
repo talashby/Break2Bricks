@@ -18,6 +18,10 @@ class ABreak2BricksBlockGrid : public AActor
 	UPROPERTY(Category = Grid, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UTextRenderComponent* pNoMoreMovesText;
 
+	/** Text component */
+	UPROPERTY(Category = Grid, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	class UTextRenderComponent* pLevelCompleteText;
+
 public:
 	ABreak2BricksBlockGrid();
 
@@ -49,8 +53,10 @@ public:
 public:
 	/** Returns DummyRoot subobject **/
 	FORCEINLINE class USceneComponent* GetDummyRoot() const { return DummyRoot; }
-	/** Returns NoMoreMovesText subobject **/
+	/** Returns text subobject **/
 	USceneComponent* GetNoMoreMovesText() const;
+	/** Returns text subobject **/
+	USceneComponent* GetLevelCompleteText() const;
 };
 
 

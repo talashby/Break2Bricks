@@ -24,6 +24,7 @@ protected:
 	FName TickStateAnimDropDown(int iTickType);
 	FName TickStateAnimConnectColumns(int iTickType);
 	FName TickStateNoMoreMoves(int iTickType);
+	FName TickStateLevelComplete(int iTickType);
 	FName TickStateGameFinished(int iTickType);
 
 private:
@@ -32,6 +33,7 @@ private:
 	void MoveBlock(ABreak2BricksBlock *pBlock, int32 iDistinationX, int32 iDistinationY);
 	void RelocateBlocks(bool bWithAnimation=false);
 	bool CheckNoMoreMoves();
+	bool CheckLevelComplete();
 
 	ABreak2BricksPawn *pOwnerActor;
 	class ABreak2BricksBlockGrid *pGridActor;

@@ -13,6 +13,7 @@ static const FName g_ssGame("Game");
 static const FName g_ssAnimDropDown("AnimDropDown");
 static const FName g_ssConnectColumns("AnimConnectColumns");
 static const FName g_ssNoMoreMoves("NoMoreMoves");
+static const FName g_ssLevelComplete("LevelComplete");
 static const FName g_ssGameFinished("GameFinished");
 
 ACMPlayingField::ACMPlayingField(ABreak2BricksPawn *owner) : ACMachine("ACMPlayingField")
@@ -23,6 +24,7 @@ ACMPlayingField::ACMPlayingField(ABreak2BricksPawn *owner) : ACMachine("ACMPlayi
 	REGISTER_ACSTATE(ACMPlayingField, AnimDropDown);
 	REGISTER_ACSTATE(ACMPlayingField, AnimConnectColumns);
 	REGISTER_ACSTATE(ACMPlayingField, NoMoreMoves);
+	REGISTER_ACSTATE(ACMPlayingField, LevelComplete);
 	REGISTER_ACSTATE(ACMPlayingField, GameFinished);
 }
 
@@ -172,6 +174,29 @@ bool ACMPlayingField::CheckNoMoreMoves()
 	return bNoMoreMoves;
 }
 
+bool ACMPlayingField::CheckLevelComplete()
+{
+	bool bLevelComplete = true;
+	for (int32 iBlockIndexX = 0; iBlockIndexX < pGridActor->SizeX; ++iBlockIndexX)
+	{
+		for (int32 iBlockIndexY = 0; iBlockIndexY < pGridActor->SizeY; ++iBlockIndexY)
+		{
+			tBlockSet aBlocks;
+			ABreak2BricksBlock *pBlock = aBlocksField[iBlockIndexX][iBlockIndexY];
+			if (nullptr != pBlock)
+			{
+				bLevelComplete = false;
+				break;
+			}
+		}
+		if (!bLevelComplete)
+		{
+			break;
+		}
+	}
+	return bLevelComplete;
+}
+
 void ACMPlayingField::Clicked(ABreak2BricksBlock *pBlock)
 {
 	if (IsCurrentState(g_ssGame))
@@ -245,7 +270,11 @@ void ACMPlayingField::Tick()
 FName ACMPlayingField::TickStateStart(int iTickType)
 {
     if (ACMachine::TICK_StateStarted == iTickType)
-    {
+    {/*
+		FString sGameDir = FPaths::GameDir();
+		FString sCompleteFilePath = sGameDir + "Content/LevelSettings/MainGame.json";
+		FString sResult;
+		bool bRes = FFileHelper::LoadFileToString(sResult, *sCompleteFilePath);*/
 		// Spawn a block
 		//TSubclassOf<ABreak2BricksPawn> ClassToFind;
 		//TArray<AActor*> FoundActors;
@@ -337,6 +366,10 @@ FName ACMPlayingField::TickStateGame(int iTickType)
 {
 	if (ACMachine::TICK_StateStarted == iTickType)
 	{
+		if (CheckLevelComplete())
+		{
+			return g_ssLevelComplete; // ******************************* State Finished ********************************
+		}
 		if (CheckNoMoreMoves())
 		{
 			return g_ssNoMoreMoves; // ******************************* State Finished ********************************
@@ -433,6 +466,25 @@ FName ACMPlayingField::TickStateNoMoreMoves(int iTickType)
 		if (pOwnerActor->IsAnyClick())
 		{
 			pGridActor->GetNoMoreMovesText()->SetVisibility(false);
+			return g_ssGameFinished;
+		}
+	}
+	return "";
+}
+
+FName ACMPlayingField::TickStateLevelComplete(int iTickType)
+{
+	if (ACMachine::TICK_StateStarted == iTickType)
+	{
+		pOwnerActor->ResetAnyClick();
+		pGridActor->GetLevelCompleteText()->SetVisibility(true);
+		pLevelMenu->RemoveFromViewport();
+	}
+	else if (ACMachine::TICK_StateNormal == iTickType)
+	{
+		if (pOwnerActor->IsAnyClick())
+		{
+			pGridActor->GetLevelCompleteText()->SetVisibility(false);
 			return g_ssGameFinished;
 		}
 	}
