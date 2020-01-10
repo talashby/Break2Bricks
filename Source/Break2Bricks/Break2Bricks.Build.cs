@@ -4,8 +4,9 @@ using UnrealBuildTool;
 
 public class Break2Bricks : ModuleRules
 {
-	public Break2Bricks(TargetInfo Target)
+	public Break2Bricks(ReadOnlyTargetRules Target) : base(Target)
 	{
+		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay" });
 	}
 }

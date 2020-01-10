@@ -5,21 +5,10 @@ using System.Collections.Generic;
 
 public class Break2BricksTarget : TargetRules
 {
-    public Break2BricksTarget(TargetInfo Target)
+    public Break2BricksTarget(TargetInfo Target) : base (Target)
 	{
 		Type = TargetType.Game;
-	}
-
-	//
-	// TargetRules interface.
-	//
-
-	public override void SetupBinaries(
-		TargetInfo Target,
-		ref List<UEBuildBinaryConfiguration> OutBuildBinaryConfigurations,
-		ref List<string> OutExtraModuleNames
-		)
-	{
-		OutExtraModuleNames.Add("Break2Bricks");
+		DefaultBuildSettings = BuildSettingsVersion.V2;
+		ExtraModuleNames.Add("Break2Bricks");
 	}
 }

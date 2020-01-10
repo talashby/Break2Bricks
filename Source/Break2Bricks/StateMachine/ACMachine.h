@@ -6,6 +6,7 @@
 #include <list>
 #include <set>
 #include <vector>
+#include "UObject/NameTypes.h"
 /**
  * 
  */

@@ -5,21 +5,10 @@ using System.Collections.Generic;
 
 public class Break2BricksEditorTarget : TargetRules
 {
-    public Break2BricksEditorTarget(TargetInfo Target)
+    public Break2BricksEditorTarget(TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Editor;
-	}
-
-	//
-	// TargetRules interface.
-	//
-
-	public override void SetupBinaries(
-		TargetInfo Target,
-		ref List<UEBuildBinaryConfiguration> OutBuildBinaryConfigurations,
-		ref List<string> OutExtraModuleNames
-		)
-	{
-		OutExtraModuleNames.Add("Break2Bricks");
+		DefaultBuildSettings = BuildSettingsVersion.V2;
+        ExtraModuleNames.Add("Break2Bricks");
 	}
 }
