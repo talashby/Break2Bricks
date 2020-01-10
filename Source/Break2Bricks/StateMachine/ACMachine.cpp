@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "Break2Bricks.h"
 #include "ACMachine.h"
-#include "Break2Bricks/Break2Bricks.h"
 
 static const FName g_ssStateNone("None");
 static const FName g_ssStateStart("Start");
@@ -198,8 +198,7 @@ bool ACMachine::SetNextState(const FName& sStateTo)
 
 void ACMachine::WriteLogMessage(int iLevel, const FString &msg) const
 {
-	// TODO disabled cause error in 4.24
-    // FMsg::Logf("", 0, TEXT(""), (ELogVerbosity::Type)iLevel, *(GetLogPrefix() + msg));
+	FMsg::Logf("", 0, TEXT(""), (ELogVerbosity::Type)iLevel, TEXT("%s"), *(GetLogPrefix() + msg));
 }
 
 void ACMachine::BeforeTickStateStartedHierarchical()

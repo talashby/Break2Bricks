@@ -21,6 +21,8 @@ public:
 	void ResetAnyClick();
 	bool IsAnyClick() const;
 
+	bool IsDoubleClick() const;
+
 protected:
 	void OnResetVR();
 	void TriggerClick();

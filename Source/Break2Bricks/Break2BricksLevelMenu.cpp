@@ -2,19 +2,23 @@
 
 #include "Break2Bricks.h"
 #include "Break2BricksLevelMenu.h"
-
-
+#include "MySaveGame.h"
+#include "MyButtonLevel.h"
 
 
 UBreak2BricksLevelMenu::UBreak2BricksLevelMenu() : UUserWidget(FObjectInitializer())
 {
-	Init();
 }
 
-void UBreak2BricksLevelMenu::Init()
+void UBreak2BricksLevelMenu::Init(const FLevelSettings &oFLevelSettings_)
 {
+	bRestartButtonPressed = false;
+	bBackButtonPressed = false;
 	bBombCheckbox = false;
-	SetBombNum(1);
+	bColorBombCheckbox = false;
+	oFLevelSettings = oFLevelSettings_;
+	SetBombNum(oFLevelSettings.BombsNum);
+	SetColorBombNum(oFLevelSettings.ColorBombsNum);
 }
 
 void UBreak2BricksLevelMenu::DecBomb()
@@ -32,9 +36,45 @@ void UBreak2BricksLevelMenu::SetBombNum(int32 iBombNum_)
 	if (0 == iBombNum)
 	{
 		SetVisibilityBombMenu(false);
+		sBombNum = FText();
 	}
 	else
 	{
 		SetVisibilityBombMenu(true);
+	}
+}
+
+void UBreak2BricksLevelMenu::BurnBomb()
+{
+	bBombCheckbox = true;
+	bColorBombCheckbox = false;
+}
+
+void UBreak2BricksLevelMenu::SetColorBombNum(int32 iBombNum_)
+{
+	iColorBombNum = iBombNum_;
+	sColorBombNum = FText::FromString(FString::FromInt(iColorBombNum));
+	if (0 == iColorBombNum)
+	{
+		SetVisibilityColorBombMenu(false);
+		sColorBombNum = FText();
+	}
+	else
+	{
+		SetVisibilityColorBombMenu(true);
+	}
+}
+
+void UBreak2BricksLevelMenu::BurnColorBomb()
+{
+	bColorBombCheckbox = true;
+	bBombCheckbox = false;
+}
+
+void UBreak2BricksLevelMenu::DecColorBomb()
+{
+	if (0 < iColorBombNum)
+	{
+		SetColorBombNum(iColorBombNum - 1);
 	}
 }

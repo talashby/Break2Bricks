@@ -5,10 +5,9 @@ using System.Collections.Generic;
 
 public class Break2BricksEditorTarget : TargetRules
 {
-    public Break2BricksEditorTarget(TargetInfo Target) : base(Target)
+    public Break2BricksEditorTarget(TargetInfo Target) : base (Target)
 	{
 		Type = TargetType.Editor;
-		DefaultBuildSettings = BuildSettingsVersion.V2;
-        ExtraModuleNames.Add("Break2Bricks");
+		ExtraModuleNames.Add("Break2Bricks");
 	}
 }

@@ -66,7 +66,7 @@ void ABreak2BricksPawn::ResetAnyClick()
 {
 	if (ABreak2BricksPlayerController* pPC = Cast<ABreak2BricksPlayerController>(GetController()))
 	{
-		pPC->bAnyClick = false;
+		pPC->ResetAnyClick();
 	}
 }
 
@@ -74,7 +74,16 @@ bool ABreak2BricksPawn::IsAnyClick() const
 {
 	if (ABreak2BricksPlayerController* pPC = Cast<ABreak2BricksPlayerController>(GetController()))
 	{
-		return pPC->bAnyClick;
+		return pPC->IsAnyClick();
+	}
+	return false;
+}
+
+bool ABreak2BricksPawn::IsDoubleClick() const
+{
+	if (ABreak2BricksPlayerController* pPC = Cast<ABreak2BricksPlayerController>(GetController()))
+	{
+		return pPC->IsDoubleClick();
 	}
 	return false;
 }

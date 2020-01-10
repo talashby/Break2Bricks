@@ -24,6 +24,15 @@ class ABreak2BricksBlock : public AActor
 
 public:
 	ABreak2BricksBlock();
+	enum TileTypes{
+		TileType_0 = 0,
+		TileType_1,
+		TileType_2,
+		TileType_3,
+		TileType_4,
+		TileType_LastColorType = TileType_4,
+		TileType_Bonus
+	};
 	void Init(ACMPlayingField *pOwnerACM_, ABreak2BricksBlockGrid *pOwnerGrid_, int32 iType_, int32 iX, int32 iY);
 
 	/** Is drop down animation played */
@@ -33,18 +42,6 @@ public:
 	/** Is drop down animation played */
 	UPROPERTY(Category = Block, VisibleDefaultsOnly, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	bool bAnimConnectColumns;
-
-	/** Pointer to white material used on the focused block */
-	UPROPERTY()
-	class UMaterial* BaseMaterial;
-
-	/** Pointer to blue material used on inactive blocks */
-	UPROPERTY()
-	class UMaterialInstance* BlueMaterial;
-
-	/** Pointer to orange material used on active blocks */
-	UPROPERTY()
-	class UMaterialInstance* OrangeMaterial;
 
 	/** Handle the block being clicked */
 	UFUNCTION()

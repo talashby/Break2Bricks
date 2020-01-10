@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Blueprint/UserWidget.h"
+#include "GameField.h"
 #include "Break2BricksGameMenu.generated.h"
 
 /**
@@ -17,21 +18,62 @@ public:
 	
 	UBreak2BricksGameMenu();
 
+	static UBreak2BricksGameMenu* GetMenu();
+	static void UpdateCups();
+	void InitOnce();
 	void Init();
 
 	/** Is Play button pressed */
+	/*UPROPERTY(Category = GameMenu, VisibleDefaultsOnly, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	bool bPlayStandardGamePressed;*/
+
+	class UMyButtonLevel* GetPressedButtonLevel();
+	class UMyButtonFeature* GetPressedButtonFeature();
+	class UMyButtonLevel* GetPressedButtonLevelInfo();
+	bool GetButtonWorkshopClicked();
+
+	/** Is Clear Saved Data pressed */
 	UPROPERTY(Category = GameMenu, VisibleDefaultsOnly, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	bool bPlayStandardGamePressed;
-	
+	bool bClearSavedData;
+
+	UPROPERTY(Category = GameMenu, VisibleDefaultsOnly, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	AGameField *pGameField;
+
+	UPROPERTY(Category = GameMenu, VisibleDefaultsOnly, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	bool bButtonPressed;
+
+	UPROPERTY(Category = GameMenu, VisibleDefaultsOnly, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	FString sCurrentLanguage;
+
+	UPROPERTY(Category = GameMenu, VisibleDefaultsOnly, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UButton *pBtnInfo;
+
 	UPROPERTY(Category = GameMenu, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	FText sCurrentMana;
+	TArray<UTextBlock*> aCupsNums;
 
-	UPROPERTY(Category = GameMenu, VisibleDefaultsOnly, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	bool bDebugNextDayButtonPressed;
+	void OnButtonLevelClicked(class UMyButtonLevel *pUMyButtonLevel);
+	void OnButtonFeatureClicked(class UMyButtonFeature *pUMyButtonFeature);
 
-	int32 GetMana() const { return iMana; }
-	void AddMana(int32 iManaAdd);
+	UFUNCTION()
+	void OnButtonInfoClicked();
+
+	UFUNCTION()
+	void OnButtonWorkshopClicked();
+
+	UFUNCTION()
+	void OnButtonGetManaClicked();
+
+protected:
+	void NativeTick(const FGeometry &MyGeometry, float InDeltaTime) override;
 
 private:
-	int32 iMana;
+	void UpdateManaProgressBar();
+	//int32 iMana;
+	class UMyButtonLevel *pUMyButtonLevelPressed;
+	class UMyButtonLevel *pUMyButtonLevelInfoPressed;
+	class UMyButtonFeature *pUMyButtonFeaturePressed;
+	bool bButtonWorkshopClicked;
+
+	UProgressBar *pManaProgressBar;
+	UTextBlock *pManaProgressBarText;
 };

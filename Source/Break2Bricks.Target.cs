@@ -8,7 +8,6 @@ public class Break2BricksTarget : TargetRules
     public Break2BricksTarget(TargetInfo Target) : base (Target)
 	{
 		Type = TargetType.Game;
-		DefaultBuildSettings = BuildSettingsVersion.V2;
 		ExtraModuleNames.Add("Break2Bricks");
 	}
 }

@@ -11,6 +11,14 @@ class ABreak2BricksGameMode : public AGameMode
 
 public:
 	ABreak2BricksGameMode();
+	virtual void InitGameState() override;
+	void ClearSavedGame();
+	UFUNCTION(exec)
+	virtual void B2BAddMana();
+
+protected:
+	UPROPERTY()
+	class UMySaveGame *LoadGameInstance;
 };
 
 

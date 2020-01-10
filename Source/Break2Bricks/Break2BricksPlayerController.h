@@ -11,10 +11,23 @@ class ABreak2BricksPlayerController : public APlayerController
 
 public:
 	ABreak2BricksPlayerController();
+	void ResetAnyClick();
+	bool IsAnyClick() const;
+	void ResetDoubleClick();
+	bool IsDoubleClick() const;
+
+protected:
 
 	virtual bool InputKey(FKey Key, EInputEvent EventType, float AmountDepressed, bool bGamepad) override;
+	virtual void SetupInputComponent() override;
 
+private:
+	void ClickPressed(const FVector ClickLocation);
+	void Touched(ETouchIndex::Type FingerIndex, FVector Location);
 	bool bAnyClick;
+
+	bool bDoubleClick;
+	float TouchFirstClickPressedTime;
 };
 
 

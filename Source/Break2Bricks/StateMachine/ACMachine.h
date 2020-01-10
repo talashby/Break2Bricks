@@ -2,11 +2,6 @@
 
 #pragma once
 
-#include <map>
-#include <list>
-#include <set>
-#include <vector>
-#include "UObject/NameTypes.h"
 /**
  * 
  */

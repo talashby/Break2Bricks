@@ -24,3 +24,12 @@ namespace LogHelper
 #endif
     }
 }
+
+std::random_device MT19937::rd;
+std::mt19937 MT19937::rng = std::mt19937(rd());
+
+int32 MT19937::get(int32 iRandMax)
+{
+	std::uniform_int_distribution<int32> dist(0, iRandMax);
+	return dist(rng);
+}
